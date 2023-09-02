@@ -1,0 +1,4 @@
+langchain[llms]===0.0.279
+python-dotenv===1.0.0
+openai===0.27.8
+langchain_decorators===0.1.0
