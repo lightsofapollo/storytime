@@ -1,3 +1,11 @@
+TITLE_TEMPLATE = """
+Given the following character sheet provide a four word book title that should be unique
+
+<Character>
+{sheet}
+</Character>
+"""
+
 STORY_TEMPLATE = """
 Fill out the character sheet with the following general context in <Story>. The output should use the examples but not closely resemble them instead using unique text.
 
