@@ -20,7 +20,7 @@ class MemoryActionRecall:
         self.level = level
 
     def __str__(self):
-        return f"{self.action} ({self.level})"
+        return f"Action: {self.action} ({self.level})"
 
 
 class MemoryRecall:
@@ -32,7 +32,7 @@ class MemoryRecall:
         self.days_ago = days_ago
 
     def __str__(self):
-        return f"{self.memory} ({self.days_ago})"
+        return f"Memory: {self.memory} ({self.days_ago})"
 
 
 def parse_into_memory(input: str) -> list[MemoryRecall | MemoryActionRecall]:

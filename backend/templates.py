@@ -156,3 +156,29 @@ Include the most relevant recent memories and actions from the actions below in 
 {memory}
 </memory>
 """
+
+GET_ACTION_TEMPLATE = """Given the following <story> provide three possible actions that could happen in the story.  Do not reveal the endings only the beginnings of each action.
+<story>{story}</story>
+"""
+
+GET_RELEVANT_MEMORIES_TEMPLATE = """
+Reduce the list of memories and actions to those most similar to the state provided.
+
+For example given the following action "Go to the store" and the following memories
+
+Memory: Need food (1 day ago)
+Memory: Need food (360 days ago)
+Action: cooked dinner (5)
+Action: Went to work (2)
+
+Output:
+
+Memory: Need food (1 days ago)
+Action: cooked dinner (5)
+
+Do not include prelude. 
+
+State: "{state}"
+
+{memories}
+"""

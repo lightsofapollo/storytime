@@ -9,6 +9,8 @@ from langchain.llms.base import BaseLLM
 from langchain.callbacks import StreamingStdOutCallbackHandler
 from datetime import datetime
 from constants import CHARACTER_SHEET_FILE, DEFAULT_TEMPATURE, INITIAL_STORY_FILE, INITIAL_STORY_LENGTH, MEMORY_FILE, SUMMARY_FILE, MemoryStreamType
+from llm import analysis_llm, story_llm
+from parsers.memory import parse_into_memory
 
 from templates import MEMORY_FILL_TEMPLATE, STORY_TEMPLATE, SUMMARY_TEMPLATE, TELL_A_STORY_TEMPLATE, TITLE_TEMPLATE
 
@@ -41,19 +43,7 @@ def extract_initial_memories(llm: BaseLLM, summary: str):
     memory_chain = LLMChain(
         llm=llm, prompt=memory_template)
     output = memory_chain.run(summary=summary)
-    return output
-
-    output.split("\n")
-    memories = []
-    for line in output:
-        if line.startswith("Memory:"):
-            memories.append(
-                (MemoryStreamType.MEMORY, line.replace("Memory: ", "")))
-        elif line.startswith("Action:"):
-            memories.append(
-                (MemoryStreamType.ACTION, line.replace("Action: ", "")))
-
-    return memories
+    return parse_into_memory(output)
 
 
 def tell_a_story(llm: BaseLLM, sheet: str, memories: str):
@@ -64,13 +54,8 @@ def tell_a_story(llm: BaseLLM, sheet: str, memories: str):
 
 
 if __name__ == "__main__":
-    gpt35 = ChatOpenAI(model="gpt-3.5-turbo", streaming=True, callbacks=[
-        StreamingStdOutCallbackHandler()], temperature=DEFAULT_TEMPATURE)
-    replicate = Replicate(
-        streaming=True,
-        callbacks=[StreamingStdOutCallbackHandler()],
-        model="a16z-infra/llama-2-13b-chat:9dff94b1bed5af738655d4a7cbcdcde2bd503aa85c94334fe1f42af7f3dd5ee3",
-        input={"temperature": DEFAULT_TEMPATURE, "max_new_tokens": 2000, "top_p": 1})
+    gpt35 = analysis_llm()
+    replicate = story_llm() 
     story = sys.argv[1]
     character_sheet = initialize_story(gpt35, story)
     story_init_name = f"{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
@@ -84,9 +69,15 @@ if __name__ == "__main__":
     with open(f"{data_dir}/{SUMMARY_FILE}", "w") as f:
         f.write(summary)
     recent_memories = extract_initial_memories(gpt35, summary)
-    with open(f"{data_dir}/{MEMORY_FILE}", "w") as f:
-        f.write(recent_memories)
     told_story_one = tell_a_story(
         replicate, character_sheet, recent_memories)
     with open(f"{story_dir}/{INITIAL_STORY_FILE}", "w") as f:
         f.write(told_story_one)
+    memories = parse_into_memory(recent_memories)
+    new_memories_text = extract_initial_memories(gpt35, told_story_one)
+    new_memories = parse_into_memory(new_memories_text)
+    with open(f"{data_dir}/{MEMORY_FILE}", "w") as f:
+        for memory in memories:
+            f.write(str(memory) + "\n")
+        for memory in new_memories:
+            f.write(str(memory) + "\n")

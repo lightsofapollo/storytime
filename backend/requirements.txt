@@ -5,3 +5,4 @@ langchain_decorators===0.1.0
 replicate===0.11.0
 pytest===7.4.1
 dateparser===1.1.8
+inquirer===3.1.3
