@@ -126,25 +126,9 @@ Include 5 memories and 5Z
 {summary}
 """
 
-
-TELL_A_STORY_TEMPLATE = """
-
-Using the following character sheet tell a rich story full of dialog about the character. The story should be engaging and interesting and should be at least 1000 words long. 
-
-<character sheet>
-{sheet}
-</character sheet>
-
-Include the most relevant recent memories and actions from the actions below in the story.
-
-<memory>
-{memory}
-</memory>
-"""
-
 TELL_FIRST_STORY_TEMPLATE = """
 
-Using the following character sheet tell a rich story full of dialog about the character. The story should be engaging and create a continuing plot line with new events and memories.
+Using the following character sheet tell a rich chapter story full of dialog about the character. The story should be engaging and create a continuing plot line with new events and memories.
 
 <character sheet>
 {sheet}
@@ -159,7 +143,10 @@ Include the most relevant recent memories and actions from the actions below in 
 
 TELL_NEXT_STORY_TEMPLATE = """
 
-Using the following character sheet and previous story tell a rich story full of dialog about the character. The story should be engaging and create a continuing plot line with new events and memories.
+Using the following character sheet and previous chapter story tell a rich story full of dialog about the character. The story should be engaging and create a continuing plot line with new events and memories.
+The story should continue where the previous story left off as a chaper book without giving away the ending.
+
+The chapter should follow along with the given guidance: "{choice}"
 
 <character sheet>
 {sheet}

@@ -47,11 +47,8 @@ if __name__ == "__main__":
     recent_memories = "\n".join(map(lambda x: str(x), memories[:100]))
     relevant_memories = get_relevant_story_memories(analysis_llm, choice, recent_memories)
 
-    for memory in relevant_memories:
-        print(memory)
-
     sheet = db.get_character_sheet()
-    next_story = tell_next_story(story_llm, sheet, lastest_story, relevant_memories)
+    next_story = tell_next_story(story_llm, choice, sheet, lastest_story, relevant_memories)
     new_memories = extract_memories(analysis_llm, next_story)
     db.add_new_memories(new_memories)
     db.save_new_story(next_story)

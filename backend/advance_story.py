@@ -35,7 +35,7 @@ if __name__ == "__main__":
         print(memory)
 
     sheet = db.get_character_sheet()
-    next_story = tell_next_story(story_llm, sheet, lastest_story, relevant_memories)
+    next_story = tell_next_story(story_llm, choice, sheet, lastest_story, relevant_memories)
     new_memories = extract_memories(analysis_llm, next_story)
     db.add_new_memories(new_memories)
     db.save_new_story(next_story)

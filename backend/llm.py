@@ -72,8 +72,8 @@ def get_story_choices(llm: BaseLLM, story: str):
         llm=llm, prompt=story_chain_prompt_template)
     return story_chain.run(story=story)
 
-def tell_next_story(llm: BaseLLM, sheet: str, story: str, memories: list[MemoryRecall | MemoryActionRecall]):
+def tell_next_story(llm: BaseLLM, choice: str, sheet: str, story: str, memories: list[MemoryRecall | MemoryActionRecall]):
     story_template = PromptTemplate.from_template(TELL_NEXT_STORY_TEMPLATE)
     story_chain = LLMChain(
         llm=llm, prompt=story_template)
-    return story_chain.run(sheet=sheet, story=story, memory=flatten_memory(memories))
+    return story_chain.run(choice=choice, sheet=sheet, story=story, memory=flatten_memory(memories))
