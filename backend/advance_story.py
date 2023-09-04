@@ -26,24 +26,8 @@ if __name__ == "__main__":
 
     print("Currently in the story...")
     print(lastest_story)
-
+    choice = input("What choice do you want to continue? (type the choice) ")
     memories = db.get_memory()
-    choices_raw = get_story_choices(analysis_llm, lastest_story)
-    choices = parse_choices(choices_raw)
-
-    question_list = []
-    for choice in choices:
-        question_list.append(choice.choice)
-
-    questions = [
-        inquirer.List(
-            "choice",
-            message="What choice do you want to continue?",
-            choices=question_list,
-            carousel=True)
-    ]
-    answer = inquirer.prompt(questions)
-    choice = answer["choice"]
     recent_memories = "\n".join(map(lambda x: str(x), memories[:100]))
     relevant_memories = get_relevant_story_memories(analysis_llm, choice, recent_memories)
 

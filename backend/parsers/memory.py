@@ -34,6 +34,8 @@ class MemoryRecall:
     def __str__(self):
         return f"Memory: {self.memory} ({self.days_ago})"
 
+def flatten_memory(memory_list: list[MemoryRecall | MemoryActionRecall]) -> str:
+    return "\n".join([str(memory) for memory in memory_list])
 
 def parse_into_memory(input: str) -> list[MemoryRecall | MemoryActionRecall]:
     """Parses the input and returns a list of MemoryRecall objects"""

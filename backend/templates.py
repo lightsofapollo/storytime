@@ -142,13 +142,32 @@ Include the most relevant recent memories and actions from the actions below in 
 </memory>
 """
 
-TELL_A_STORY_NEXT_TEMPLATE = """
+TELL_FIRST_STORY_TEMPLATE = """
 
 Using the following character sheet tell a rich story full of dialog about the character. The story should be engaging and create a continuing plot line with new events and memories.
 
 <character sheet>
 {sheet}
 </character sheet>
+
+Include the most relevant recent memories and actions from the actions below in the story.
+
+<memory>
+{memory}
+</memory>
+"""
+
+TELL_NEXT_STORY_TEMPLATE = """
+
+Using the following character sheet and previous story tell a rich story full of dialog about the character. The story should be engaging and create a continuing plot line with new events and memories.
+
+<character sheet>
+{sheet}
+</character sheet>
+
+<previous story>
+{story}
+</previous story>
 
 Include the most relevant recent memories and actions from the actions below in the story.
 
