@@ -163,7 +163,7 @@ Include the most relevant recent memories and actions from the actions below in 
 </memory>
 """
 
-GET_ACTION_TEMPLATE = """Given the following <story> provide three possible actions that could happen in the story.  Do not reveal the endings only the beginnings of each action.
+GET_ACTION_TEMPLATE = """Given the following <story> provide three possible actions that could happen next in the story.  Do not reveal the endings only the beginnings of each action.
 <story>{story}</story>
 """
 
