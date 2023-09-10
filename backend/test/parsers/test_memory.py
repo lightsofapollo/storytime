@@ -17,17 +17,22 @@ Action: Got distracted by a passing robot (5)
 """
 
     expected_output = [
-        MemoryRecall("Created a beautiful painting", "50 days ago"),
-        MemoryRecall("Went to the Robot Workshop", "10 days ago"),
-        MemoryRecall("Explored the Dark Forest", "5 days ago"),
-        MemoryRecall("Built a robot companion named Sparky", "2 days ago"),
+        MemoryRecall(memory="Created a beautiful painting",
+                     time_ago="50 days ago"),
+        MemoryRecall(memory="Went to the Robot Workshop",
+                     time_ago="10 days ago"),
+        MemoryRecall(memory="Explored the Dark Forest", time_ago="5 days ago"),
+        MemoryRecall(memory="Built a robot companion named Sparky",
+                     time_ago="2 days ago"),
         MemoryRecall(
-            "Discovered a hidden cave filled with rare minerals", "1 day ago"),
-        MemoryActionRecall("Built a robot army", 8),
-        MemoryActionRecall("Chased squirrels", 4),
-        MemoryActionRecall("Sniffed a new rock", 3),
-        MemoryActionRecall("Barked excitedly at a new invention", 7),
-        MemoryActionRecall("Got distracted by a passing robot", 5),
+            memory="Discovered a hidden cave filled with rare minerals", time_ago="1 day ago"),
+        MemoryActionRecall(action="Built a robot army", level=8),
+        MemoryActionRecall(action="Chased squirrels", level=4),
+        MemoryActionRecall(action="Sniffed a new rock", level=3),
+        MemoryActionRecall(
+            action="Barked excitedly at a new invention", level=7),
+        MemoryActionRecall(
+            action="Got distracted by a passing robot", level=5),
     ]
 
     output = parse_into_memory(input)
