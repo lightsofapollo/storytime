@@ -1,16 +1,9 @@
-from llm import ANALYSIS_LLM, create_analysis_llm, initialize_story_template
-from pydantic import BaseModel
+from fastapi import FastAPI
 from dotenv import load_dotenv
-from fastapi.responses import StreamingResponse
-from fastapi import Depends, FastAPI, HTTPException, Request
-from sqlalchemy.orm import Session
-from db.database import Base, SessionLocal, engine
-from litellm import completion
 from routes import router as routers
+import db
 
 load_dotenv()
-
-Base.metadata.create_all(bind=engine)
 
 
 def get_application() -> FastAPI:
@@ -26,9 +19,11 @@ def get_application() -> FastAPI:
 app = get_application()
 
 
-@app.middleware("http")
-async def db_session_middleware(request: Request, call_next):
-    request.state.db = Session()
-    response = await call_next(request)
-    request.state.db.close()
-    return response
+@app.on_event("startup")
+async def startup():
+    await db.prisma.connect()
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    await db.prisma.disconnect()
