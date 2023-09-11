@@ -1,10 +1,11 @@
-from fastapi import FastAPI
+from typing import Callable
+from fastapi import Depends, FastAPI
 from dotenv import load_dotenv
 from routes import router as routers
-import db
+from user import authenticate_user, IDToken
+from db.prisma import prisma
 
 load_dotenv()
-
 
 def get_application() -> FastAPI:
     application = FastAPI(
@@ -21,9 +22,13 @@ app = get_application()
 
 @app.on_event("startup")
 async def startup():
-    await db.prisma.connect()
+    await prisma.connect()
 
 
 @app.on_event("shutdown")
 async def shutdown():
-    await db.prisma.disconnect()
+    await prisma.disconnect()
+
+@app.get("/protected")
+def protected(id_token: IDToken = Depends(authenticate_user)):
+    return {"Hello": "World", "user_email": id_token.email}
