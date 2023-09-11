@@ -5,7 +5,7 @@ from typing import List, Union
 
 from bson import ObjectId
 from parsers.memory import MemoryType  # Import other required types
-from parsers.memory import MemoryActionRecall, MemoryRecall
+from parsers.memory import ActionMemory, RecallMemory
 
 
 # Assuming you have classes MemoryRecall and MemoryActionRecall
@@ -39,5 +39,5 @@ class AbstractStoryDatabase(ABC):
         pass
 
     @abstractmethod
-    def add_new_memories(self, memories: List[Union[MemoryRecall, MemoryActionRecall]]):
+    def add_new_memories(self, memories: List[Union[RecallMemory, ActionMemory]]):
         pass

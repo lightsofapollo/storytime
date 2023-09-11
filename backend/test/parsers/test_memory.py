@@ -1,4 +1,4 @@
-from parsers.memory import MemoryActionRecall, MemoryRecall, parse_into_memory
+from parsers.memory import ActionMemory, RecallMemory, parse_into_memory
 
 
 def test_parse_memory():
@@ -17,22 +17,22 @@ Action: Got distracted by a passing robot (5)
 """
 
     expected_output = [
-        MemoryRecall(memory="Created a beautiful painting",
+        RecallMemory(memory="Created a beautiful painting",
                      time_ago="50 days ago"),
-        MemoryRecall(memory="Went to the Robot Workshop",
+        RecallMemory(memory="Went to the Robot Workshop",
                      time_ago="10 days ago"),
-        MemoryRecall(memory="Explored the Dark Forest", time_ago="5 days ago"),
-        MemoryRecall(memory="Built a robot companion named Sparky",
+        RecallMemory(memory="Explored the Dark Forest", time_ago="5 days ago"),
+        RecallMemory(memory="Built a robot companion named Sparky",
                      time_ago="2 days ago"),
-        MemoryRecall(
+        RecallMemory(
             memory="Discovered a hidden cave filled with rare minerals", time_ago="1 day ago"),
-        MemoryActionRecall(action="Built a robot army", level=8),
-        MemoryActionRecall(action="Chased squirrels", level=4),
-        MemoryActionRecall(action="Sniffed a new rock", level=3),
-        MemoryActionRecall(
-            action="Barked excitedly at a new invention", level=7),
-        MemoryActionRecall(
-            action="Got distracted by a passing robot", level=5),
+        ActionMemory(action="Built a robot army", importance=8),
+        ActionMemory(action="Chased squirrels", importance=4),
+        ActionMemory(action="Sniffed a new rock", importance=3),
+        ActionMemory(
+            action="Barked excitedly at a new invention", importance=7),
+        ActionMemory(
+            action="Got distracted by a passing robot", importance=5),
     ]
 
     output = parse_into_memory(input)

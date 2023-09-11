@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 from ai.story_session import StorySession
 from parsers.choices import Choice
-from parsers.memory import MemoryActionRecall, MemoryRecall
+from parsers.memory import ActionMemory, RecallMemory
 
 
 router = APIRouter()
@@ -23,7 +23,7 @@ class InitialStoryMemoryInput(BaseModel):
 
 
 class MemoryOutput(BaseModel):
-    memories: list[MemoryRecall | MemoryActionRecall]
+    memories: list[RecallMemory | ActionMemory]
 
 
 class RelevantMemoryInput(BaseModel):

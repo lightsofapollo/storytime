@@ -4,7 +4,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.llms import Replicate
 from langchain.llms.base import BaseLLM
 from langchain.callbacks import StreamingStdOutCallbackHandler
-from parsers.memory import MemoryActionRecall, MemoryRecall, flatten_memory, parse_into_memory
+from parsers.memory import ActionMemory, RecallMemory, flatten_memory, parse_into_memory
 
 from templates import GET_ACTION_TEMPLATE, GET_RELEVANT_MEMORIES_TEMPLATE, MEMORY_FILL_TEMPLATE, STORY_TEMPLATE, SUMMARY_TEMPLATE, TELL_FIRST_STORY_TEMPLATE, TELL_NEXT_STORY_TEMPLATE, TITLE_TEMPLATE
 
@@ -52,7 +52,7 @@ def summerize_story(llm: BaseLLM, sheet: str):
     return summary_chain.run(sheet=sheet)
 
 
-def extract_memories(llm: BaseLLM, summary: str) -> list[MemoryActionRecall | MemoryRecall]:
+def extract_memories(llm: BaseLLM, summary: str) -> list[ActionMemory | RecallMemory]:
     memory_template = PromptTemplate.from_template(MEMORY_FILL_TEMPLATE)
     memory_chain = LLMChain(
         llm=llm, prompt=memory_template)
@@ -60,7 +60,7 @@ def extract_memories(llm: BaseLLM, summary: str) -> list[MemoryActionRecall | Me
     return parse_into_memory(output)
 
 
-def tell_a_story(llm: BaseLLM, prompt: str, sheet: str, memories: list[MemoryRecall | MemoryActionRecall]):
+def tell_a_story(llm: BaseLLM, prompt: str, sheet: str, memories: list[RecallMemory | ActionMemory]):
     story_template = PromptTemplate.from_template(TELL_FIRST_STORY_TEMPLATE)
     story_chain = LLMChain(
         llm=llm, prompt=story_template)
@@ -83,7 +83,7 @@ def get_story_choices(llm: BaseLLM, story: str):
     return story_chain.run(story=story)
 
 
-def tell_next_story(llm: BaseLLM, choice: str, sheet: str, story: str, memories: list[MemoryRecall | MemoryActionRecall]):
+def tell_next_story(llm: BaseLLM, choice: str, sheet: str, story: str, memories: list[RecallMemory | ActionMemory]):
     story_template = PromptTemplate.from_template(TELL_NEXT_STORY_TEMPLATE)
     story_chain = LLMChain(
         llm=llm, prompt=story_template)
