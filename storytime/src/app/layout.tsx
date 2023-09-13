@@ -6,6 +6,7 @@ import "@fontsource/roboto/700.css";
 import type { Metadata } from "next";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 import { Inter } from "next/font/google";
+import { TrpcProvider } from "@/utils/trpc-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,9 +22,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <UserProvider>
-        <body className={inter.className}>{children}</body>
-      </UserProvider>
+      <body className={inter.className}>
+        <UserProvider>
+          <TrpcProvider>{children}</TrpcProvider>
+        </UserProvider>
+      </body>
     </html>
   );
 }
