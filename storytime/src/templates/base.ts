@@ -6,7 +6,7 @@ enum TemplateModelTypes {
   LLAMA2,
 }
 
-type RoleTypes = Pick<Message, "role">;
+type RoleTypes = Message["role"];
 
 export abstract class BaseTemplate {
   template: string = "";
@@ -22,7 +22,7 @@ export abstract class BaseTemplate {
         return experimental_buildLlama2Prompt([
           {
             content: this.template,
-            role: "user",
+            role: role ? role : "user",
           },
         ]);
     }
