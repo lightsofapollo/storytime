@@ -3,7 +3,8 @@ import {
   fetchRequestHandler,
 } from "@trpc/server/adapters/fetch";
 import { appRouter } from "../trpc-router";
-import { withApiAuthRequired } from "@auth0/nextjs-auth0";
+import { getSession, withApiAuthRequired } from "@auth0/nextjs-auth0";
+import prisma from "@/utils/db";
 
 const handler = withApiAuthRequired(
   (request: any /* this works but requires hacky use of any */) => {
@@ -12,11 +13,26 @@ const handler = withApiAuthRequired(
       endpoint: "/api/trpc",
       req: request,
       router: appRouter,
-      createContext: function (
-        opts: FetchCreateContextFnOptions
-      ): object | Promise<object> {
-        return {};
-      },
+      createContext: async function (opts: FetchCreateContextFnOptions) {
+        const session = await getSession(
+          opts.req as any,
+          {
+            headers: opts.resHeaders,
+          } as any
+        )!;
+
+        const user = await prisma.user.upsert({
+          where: {
+            foreignId: session!.user.sub,
+          },
+          create: {
+            foreignId: session!.user.sub,
+          },
+          update: {},
+        });
+
+        return { session, user };
+      } as any,
     });
   }
 );
