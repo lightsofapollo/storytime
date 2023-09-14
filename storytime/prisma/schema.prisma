@@ -63,6 +63,7 @@ model RecallMemory {
 
 model StoryMetadata {
   id             Int             @id @default(autoincrement())
+  title          String
   User           User?           @relation(fields: [userId], references: [id])
   userId         Int?
   CharacterSheet CharacterSheet?
