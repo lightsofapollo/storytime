@@ -18,6 +18,7 @@ export default function EnterCharacterSheet({ id, title }: Props) {
     handleSubmit,
   } = useCompletion({
     api: "/api/ai/character",
+    body: { storyMetadataId: id },
   });
 
   return (

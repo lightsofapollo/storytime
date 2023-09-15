@@ -65,6 +65,7 @@ model StoryMetadata {
   id             Int             @id @default(autoincrement())
   title          String
   published      Boolean         @default(false)
+  prompt         String          @default("") @db.Text
   User           User?           @relation(fields: [userId], references: [id])
   userId         Int?
   CharacterSheet CharacterSheet?
