@@ -1,6 +1,7 @@
 "use client";
 
 import { trpc } from "@/utils/trpc";
+import Link from "next/link";
 import React from "react";
 
 export default function Stories() {
@@ -22,12 +23,14 @@ export default function Stories() {
           key={story.id}
           style={{ border: "1px solid #ccc", textAlign: "center" }}
         >
-          <img
-            src={`https://robohash.org/${story.id}?set=set2&size=180x180`}
-            alt={story.title}
-            style={{ height: 180, width: 180 }}
-          />
-          <h3>{story.title}</h3>
+          <Link href={`/stories/${story.id}`}>
+            <img
+              src={`https://robohash.org/${story.id}?set=set2&size=180x180`}
+              alt={story.title}
+              style={{ height: 180, width: 180 }}
+            />
+            <h3>{story.title}</h3>
+          </Link>
         </div>
       ))}
     </div>

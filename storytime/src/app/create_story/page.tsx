@@ -14,13 +14,11 @@ export default function CreateStory() {
   const router = useRouter();
   const { register, handleSubmit } = useForm<Inputs>();
   const mutation = trpc.createStoryMeta.useMutation();
-  console.log(mutation);
 
   function onSubmit(data: Inputs) {
     console.log(data);
     mutation.mutate(data, {
       onSuccess: (result) => {
-        console.log(`/stories/${result.id}`);
         router.push(`/stories/${result.id}`);
       },
     });

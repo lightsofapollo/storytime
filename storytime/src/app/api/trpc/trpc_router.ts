@@ -4,6 +4,7 @@ import prisma from "@/utils/db";
 import { Session } from "@auth0/nextjs-auth0";
 import { User } from "@prisma/client";
 import { z } from "zod";
+import logger from "@/utils/logger";
 
 const t = initTRPC.context<{ session: Session; user: User }>().create({
   transformer: superjson,
@@ -14,6 +15,49 @@ export const appRouter = t.router({
     console.log({ ctx });
     return [];
   }),
+
+  getStoryState: t.procedure
+    .input(
+      z.object({
+        id: z.number(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const meta = await prisma.storyMetadata.findFirst({
+        where: {
+          id: input.id,
+        },
+      });
+
+      if (!meta) {
+        return null;
+      }
+
+      if (meta.userId !== ctx.user.id && !meta.published) {
+        logger.info({ storyMetaId: meta.id }, "Story is not published");
+        return null;
+      }
+
+      // this is not the current users story...
+      const characterSheetCount = await prisma.characterSheet.count({
+        where: {
+          storyMetadataId: meta.id,
+        },
+      });
+
+      const summaryCount = await prisma.summary.count({
+        where: {
+          storyMetadataId: meta.id,
+        },
+      });
+
+      return {
+        id: meta.id,
+        title: meta.title,
+        hasCharacterSheet: characterSheetCount > 0,
+        hasSummary: summaryCount > 0,
+      };
+    }),
 
   listStoryMeta: t.procedure.query(async ({ ctx }) => {
     return await prisma.storyMetadata.findMany({
