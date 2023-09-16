@@ -11,8 +11,8 @@ const t = initTRPC.context<{ session: Session; user: User }>().create({
 });
 
 async function storyMetaFromCtx(
-  storyMetadataId: number,
-  ctx: { user: { id: number } }
+  storyMetadataId: string,
+  ctx: { user: { id: string } }
 ) {
   return await prisma.storyMetadata.findFirst({
     where: {
@@ -31,7 +31,7 @@ export const appRouter = t.router({
   getStoryState: t.procedure
     .input(
       z.object({
-        id: z.number(),
+        id: z.string(),
       })
     )
     .query(async ({ input, ctx }) => {
@@ -128,7 +128,7 @@ export const appRouter = t.router({
   createStoryMemories: t.procedure
     .input(
       z.object({
-        storyMetadataId: z.number(),
+        storyMetadataId: z.string(),
         memories: z.array(
           z.union([
             z.object({
@@ -192,7 +192,7 @@ export const appRouter = t.router({
   getSummary: t.procedure
     .input(
       z.object({
-        storyMetadataId: z.number(),
+        storyMetadataId: z.string(),
       })
     )
     .query(async ({ input, ctx }) => {

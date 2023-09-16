@@ -18,6 +18,7 @@ export default function Stories() {
         gap: 20,
       }}
     >
+      <Link href="/stories/new">Create new story</Link>
       {stories?.map((story) => (
         <div
           key={story.id}

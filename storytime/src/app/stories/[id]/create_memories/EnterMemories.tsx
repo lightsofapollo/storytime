@@ -10,7 +10,7 @@ export default function EnterMemories({
   id,
   title,
 }: {
-  id: number;
+  id: string;
   title: string;
 }) {
   const summary = trpc.getSummary.useQuery({ storyMetadataId: id });

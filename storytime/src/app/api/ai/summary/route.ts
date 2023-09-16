@@ -11,7 +11,7 @@ const openai = new OpenAI();
 
 const handler = async function (req: NextRequest) {
   const { user } = await getUser(req);
-  const body: { prompt: string; storyMetadataId: number } = await req.json();
+  const body: { prompt: string; storyMetadataId: string } = await req.json();
   const { prompt: characterSheet, storyMetadataId } = body;
 
   const storyMetadata = await prisma.storyMetadata.findUnique({

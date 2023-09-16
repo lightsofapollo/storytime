@@ -12,7 +12,7 @@ export default function StoryPage({
 }: {
   params: { id: string };
 }) {
-  const query = trpc.getStoryState.useQuery({ id: parseInt(id, 10) });
+  const query = trpc.getStoryState.useQuery({ id });
 
   if (query.isLoading) {
     return (

@@ -3,8 +3,7 @@ import {
   fetchRequestHandler,
 } from "@trpc/server/adapters/fetch";
 import { appRouter } from "../trpc_router";
-import { getSession, withApiAuthRequired } from "@auth0/nextjs-auth0";
-import prisma from "@/utils/db";
+import { withApiAuthRequired } from "@auth0/nextjs-auth0";
 import { getUser } from "@/utils/get_user";
 import { NextRequest } from "next/server";
 
@@ -21,6 +20,6 @@ const handler = withApiAuthRequired(
       } as any,
     });
   }
-);
+) as any;
 
 export { handler as GET, handler as POST };

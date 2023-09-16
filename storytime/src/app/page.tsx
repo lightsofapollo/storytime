@@ -1,8 +1,14 @@
+import { api } from "@/trpc/server";
 import { getSession } from "@auth0/nextjs-auth0";
 import { Container, Typography } from "@mui/material";
 
 export default async function Home() {
   const user = await getSession();
+  if (user) {
+    const stories = await api.listStoryMeta.query();
+    console.log(stories);
+  }
+
   if (!user) {
     return (
       <Container>

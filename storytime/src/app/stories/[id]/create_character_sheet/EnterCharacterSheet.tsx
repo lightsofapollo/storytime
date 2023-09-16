@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import ReactMarkdown from "react-markdown";
 
 type Props = {
-  id: number;
+  id: string;
   title: string;
 };
 

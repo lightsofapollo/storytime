@@ -1,22 +1,17 @@
-import { Container } from "@mui/material";
-import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
+import { Container, TextField } from "@mui/material";
 import { useCompletion } from "ai/react";
 import { useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 
 type Props = {
-  id: number;
+  id: string;
   title: string;
 };
 
-export default function EnterFirstStory({ id, title }: Props) {
+export default function EnterSummary({ id, title }: Props) {
   const { completion, isLoading, complete, handleSubmit } = useCompletion({
-    api: "/api/ai/initial_story",
+    api: "/api/ai/summary",
     body: { storyMetadataId: id },
-    onFinish(prompt, completion) {
-      // todo save story...
-      // todo save memories for the story...
-    },
   });
 
   useEffect(() => {
@@ -25,16 +20,16 @@ export default function EnterFirstStory({ id, title }: Props) {
 
   return (
     <Container>
-      <h1>Generate Story{title}</h1>
+      <h1>Generate Story Summary{title}</h1>
       <form onSubmit={handleSubmit}>
         <Container>
           <button disabled={isLoading} type="submit">
-            Generate story
+            Generate summary
           </button>
         </Container>
       </form>
       <Container>
-        <h3>Story</h3>
+        <h3>Summary results</h3>
         <ReactMarkdown>{completion}</ReactMarkdown>
       </Container>
     </Container>

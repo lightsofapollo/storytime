@@ -4,7 +4,7 @@ import OpenAI from "openai";
 
 const openai = new OpenAI();
 
-export async function storyToMemory(storyMetadataId: number, prompt: string) {
+export async function storyToMemory(storyMetadataId: string, prompt: string) {
   const template = new MemoryTemplate(prompt);
 
   const response = await openai.chat.completions.create({
@@ -23,11 +23,12 @@ export async function storyToMemory(storyMetadataId: number, prompt: string) {
   const recalls = [];
 
   for (const memory of memories) {
-    const { type, ...rest } = memory;
-    if (type === "action") {
-      actions.push({ ...rest, storyMetadataId });
+    if (memory.type === "action") {
+      const { type, ...item } = memory;
+      actions.push({ storyMetadataId, ...item });
     } else {
-      recalls.push({ ...rest, storyMetadataId });
+      const { type, ...item } = memory;
+      recalls.push({ storyMetadataId, ...item });
     }
   }
 
