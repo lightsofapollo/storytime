@@ -44,6 +44,11 @@ const handler = async function (req: NextRequest) {
 
   const stream = OpenAIStream(response, {
     async onCompletion(completion) {
+      await prisma.characterSheet.deleteMany({
+        where: {
+          storyMetadataId,
+        },
+      });
       await prisma.$transaction([
         prisma.storyMetadata.update({
           where: {

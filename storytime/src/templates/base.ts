@@ -1,7 +1,7 @@
 import { Message } from "ai";
 import { experimental_buildLlama2Prompt } from "ai/prompts";
 
-enum TemplateModelTypes {
+export enum TemplateModelTypes {
   OPENAI,
   LLAMA2,
 }

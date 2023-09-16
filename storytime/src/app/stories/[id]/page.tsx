@@ -5,6 +5,7 @@ import { Container } from "@mui/material";
 import EnterCharacterSheet from "./EnterCharacterSheet";
 import EnterSummary from "./EnterSummary";
 import EnterMemories from "./EnterMemories";
+import EnterFirstStory from "./EnterFirstStory";
 
 export default function StoryPage({
   params: { id },
@@ -44,6 +45,10 @@ export default function StoryPage({
 
     if (!query.data.hasMemories) {
       return <EnterMemories id={query.data.id} title={query.data.title} />;
+    }
+
+    if (!query.data.hasStories) {
+      return <EnterFirstStory id={query.data.id} title={query.data.title} />;
     }
   }
 
