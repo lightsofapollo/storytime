@@ -27,7 +27,7 @@ export default class MemoryTemplate extends BaseTemplate {
         Action: second action description (Level of relevance, where 1 is brushing teeth and 10 is college breakup).
 
 
-        Include 5 memories and 5Z
+        Include 5 memories and 5 actions
 
         ${summary}`;
   }

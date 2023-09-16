@@ -23,7 +23,7 @@ export default function EnterCharacterSheet({ id, title }: Props) {
 
   return (
     <Container>
-      <h1>Enter Character Sheet {title}</h1>
+      <h1>Generate Character Sheet {title}</h1>
       <form onSubmit={handleSubmit}>
         <Container>
           <TextField

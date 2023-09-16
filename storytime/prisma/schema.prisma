@@ -43,21 +43,21 @@ model ActionMemory {
   id              Int    @id @default(autoincrement())
   text            String @db.Text
   importance      Int
-  storyId         Int
+  storyId         Int?
   storyMetadataId Int
 
-  Story         Story         @relation(fields: [storyId], references: [id])
+  Story         Story?        @relation(fields: [storyId], references: [id])
   StoryMetadata StoryMetadata @relation(fields: [storyMetadataId], references: [id])
 }
 
 model RecallMemory {
   id              Int    @id @default(autoincrement())
   text            String @db.Text
-  time_ago        String
-  storyId         Int
+  timeAgo         String
+  storyId         Int?
   storyMetadataId Int
 
-  Story         Story         @relation(fields: [storyId], references: [id])
+  Story         Story?        @relation(fields: [storyId], references: [id])
   StoryMetadata StoryMetadata @relation(fields: [storyMetadataId], references: [id])
 }
 

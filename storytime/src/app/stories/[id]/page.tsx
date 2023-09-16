@@ -3,6 +3,8 @@
 import { trpc } from "@/utils/trpc";
 import { Container } from "@mui/material";
 import EnterCharacterSheet from "./EnterCharacterSheet";
+import EnterSummary from "./EnterSummary";
+import EnterMemories from "./EnterMemories";
 
 export default function StoryPage({
   params: { id },
@@ -34,6 +36,14 @@ export default function StoryPage({
       return (
         <EnterCharacterSheet id={query.data.id} title={query.data.title} />
       );
+    }
+
+    if (!query.data.hasSummary) {
+      return <EnterSummary id={query.data.id} title={query.data.title} />;
+    }
+
+    if (!query.data.hasMemories) {
+      return <EnterMemories id={query.data.id} title={query.data.title} />;
     }
   }
 
