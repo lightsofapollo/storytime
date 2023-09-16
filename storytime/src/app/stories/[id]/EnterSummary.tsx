@@ -14,12 +14,17 @@ export default function EnterSummary({ id, title }: Props) {
     input,
     stop,
     isLoading,
+    complete,
     handleInputChange,
     handleSubmit,
   } = useCompletion({
     api: "/api/ai/summary",
     body: { storyMetadataId: id },
   });
+
+  useEffect(() => {
+    complete("");
+  }, []);
 
   return (
     <Container>

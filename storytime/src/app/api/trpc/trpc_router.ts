@@ -55,6 +55,7 @@ export const appRouter = t.router({
         summaryCount,
         recallMemoryCount,
         actionMemoryCount,
+        storyCount,
       ] = await prisma.$transaction([
         prisma.characterSheet.count({
           where: {
@@ -76,6 +77,11 @@ export const appRouter = t.router({
             storyMetadataId: meta.id,
           },
         }),
+        prisma.story.count({
+          where: {
+            storyMetadataId: meta.id,
+          },
+        }),
       ]);
 
       return {
@@ -84,6 +90,7 @@ export const appRouter = t.router({
         hasCharacterSheet: characterSheetCount > 0,
         hasSummary: summaryCount > 0,
         hasMemories: recallMemoryCount > 0 && actionMemoryCount > 0,
+        hasStories: storyCount > 0,
       };
     }),
 

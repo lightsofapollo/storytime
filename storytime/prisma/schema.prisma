@@ -35,27 +35,30 @@ model Story {
   chapter         Int            @default(0)
   StoryMetadata   StoryMetadata  @relation(fields: [storyMetadataId], references: [id])
   storyMetadataId Int
+  createdAt       DateTime       @default(now())
   ActionMemory    ActionMemory[]
   RecallMemory    RecallMemory[]
 }
 
 model ActionMemory {
-  id              Int    @id @default(autoincrement())
-  text            String @db.Text
+  id              Int      @id @default(autoincrement())
+  text            String   @db.Text
   importance      Int
   storyId         Int?
   storyMetadataId Int
+  createdAt       DateTime @default(now())
 
   Story         Story?        @relation(fields: [storyId], references: [id])
   StoryMetadata StoryMetadata @relation(fields: [storyMetadataId], references: [id])
 }
 
 model RecallMemory {
-  id              Int    @id @default(autoincrement())
-  text            String @db.Text
+  id              Int      @id @default(autoincrement())
+  text            String   @db.Text
   timeAgo         String
   storyId         Int?
   storyMetadataId Int
+  createdAt       DateTime @default(now())
 
   Story         Story?        @relation(fields: [storyId], references: [id])
   StoryMetadata StoryMetadata @relation(fields: [storyMetadataId], references: [id])
@@ -68,6 +71,7 @@ model StoryMetadata {
   prompt         String          @default("") @db.Text
   User           User?           @relation(fields: [userId], references: [id])
   userId         Int?
+  createdAt      DateTime        @default(now())
   CharacterSheet CharacterSheet?
   Summary        Summary?
   Story          Story[]
