@@ -1,4 +1,5 @@
 .env
+.env.test
 local/*
 __pycache__
 .pytest_cache

@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "storytime-backend"
+version = "0.1.0"
+description = ""
+authors = ["James Lal <james@littlebearlabs.io>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+langchain = { version = "=0.0.279", extras = ["llms"] }
+python-dotenv = "=1.0.0"
+openai = "=0.27.8"
+replicate = "=0.11.0"
+dateparser = "=1.1.8"
+inquirer = "=3.1.3"
+fastapi = "=0.103.1"
+sqlalchemy = "=2.0.20"
+psycopg2 = "=2.9.7"
+uvicorn = "=0.23.2"
+litellm = "=0.1.574"
+httpx = "=0.24.1"
+prisma = "^0.10.0"
+fastapi-oidc = "^0.0.9"
+
+[tool.poetry.dev-dependencies]
+pytest = "=7.4.1"
+pytest-sugar = "=0.9.7"
+pytest-asyncio = "=0.21.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

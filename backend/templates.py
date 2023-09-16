@@ -128,7 +128,8 @@ Include 5 memories and 5Z
 
 TELL_FIRST_STORY_TEMPLATE = """
 
-Using the following character sheet tell a rich chapter story full of dialog about the character. The story should be engaging and create a continuing plot line with new events and memories.
+Using the following character sheet tell a rich single chapter story full of dialog about the character. The story should be engaging and create a continuing plot line with new events and memories.
+The story should be a foundation for future chapters and stories.
 
 <character sheet>
 {sheet}
@@ -139,6 +140,10 @@ Include the most relevant recent memories and actions from the actions below in 
 <memory>
 {memory}
 </memory>
+
+The story should emphasize the elements from the following text in addition:
+
+{prompt}
 """
 
 TELL_NEXT_STORY_TEMPLATE = """
@@ -161,6 +166,8 @@ Include the most relevant recent memories and actions from the actions below in 
 <memory>
 {memory}
 </memory>
+
+The chapter should resolve {choice}
 """
 
 GET_ACTION_TEMPLATE = """Given the following <story> provide three possible actions that could happen next in the story.  Do not reveal the endings only the beginnings of each action.

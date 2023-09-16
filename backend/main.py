@@ -1,35 +1,34 @@
-import os
-import dotenv
-import sys
-from datetime import datetime
-from constants import CHARACTER_SHEET_FILE, DEFAULT_TEMPATURE, INITIAL_STORY_FILE, INITIAL_STORY_LENGTH, MEMORY_FILE, SUMMARY_FILE, MemoryStreamType
-from llm import create_analysis_llm, create_story_llm, extract_memories, initialize_story, summerize_story, tell_a_story
+from typing import Callable
+from fastapi import Depends, FastAPI
+from dotenv import load_dotenv
+from routes import router as routers
+from user import authenticate_user, IDToken
+from db.prisma import prisma
 
-dotenv.load_dotenv()
+load_dotenv()
 
-if __name__ == "__main__":
-    gpt35 = create_analysis_llm()
-    replicate = create_story_llm() 
-    story = sys.argv[1]
-    character_sheet = initialize_story(gpt35, story)
-    story_init_name = f"{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
-    data_dir = f"local/{story_init_name}/data"
-    story_dir = f"local/{story_init_name}/stories"
-    os.makedirs(story_dir, exist_ok=True)
-    os.makedirs(data_dir, exist_ok=True)
-    with open(f"{data_dir}/{CHARACTER_SHEET_FILE}", "w") as f:
-        f.write(character_sheet)
-    summary = summerize_story(gpt35, character_sheet)
-    with open(f"{data_dir}/{SUMMARY_FILE}", "w") as f:
-        f.write(summary)
-    memories = extract_memories(gpt35, summary)
-    told_story_one = tell_a_story(
-        replicate, character_sheet, memories)
-    with open(f"{story_dir}/{INITIAL_STORY_FILE}", "w") as f:
-        f.write(told_story_one)
-    new_memories = extract_memories(gpt35, told_story_one)
-    with open(f"{data_dir}/{MEMORY_FILE}", "w") as f:
-        for memory in memories:
-            f.write(str(memory) + "\n")
-        for memory in new_memories:
-            f.write(str(memory) + "\n")
+def get_application() -> FastAPI:
+    application = FastAPI(
+        title="Storytime"
+    )
+    application.include_router(
+        routers
+    )
+    return application
+
+
+app = get_application()
+
+
+@app.on_event("startup")
+async def startup():
+    await prisma.connect()
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    await prisma.disconnect()
+
+@app.get("/protected")
+def protected(id_token: IDToken = Depends(authenticate_user)):
+    return {"Hello": "World", "user_email": id_token.email}

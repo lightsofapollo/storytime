@@ -1,11 +1,12 @@
 import os
 from pathlib import Path
+from db.abstract import AbstractStoryDatabase
 
 from constants import CHARACTER_SHEET_FILE, INITIAL_STORY_FILE, MEMORY_FILE, SUMMARY_FILE
-from parsers.memory import MemoryActionRecall, MemoryRecall, parse_into_memory
+from parsers.memory import ActionMemory, RecallMemory, parse_into_memory
 
 
-class StoryDatabase():
+class StoryDatabase(AbstractStoryDatabase):
     root: Path
 
     def __init__(self, root: Path):
@@ -47,7 +48,7 @@ class StoryDatabase():
         with open(self.next_story_filename(), "w") as f:
             f.write(story)
 
-    def add_new_memories(self, memories: list[MemoryRecall | MemoryActionRecall]):
+    def add_new_memories(self, memories: list[RecallMemory | ActionMemory]):
         path = self.root.joinpath("data").joinpath(MEMORY_FILE)
         with open(path, "a") as f:
             for memory in memories:
