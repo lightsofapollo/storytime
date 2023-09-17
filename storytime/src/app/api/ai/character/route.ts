@@ -1,7 +1,7 @@
 import { CharacterSheetTemplate } from "@/ai/templates/character_sheet";
 import prisma from "@/utils/db";
 import { getUser } from "@/utils/get_user";
-import { getSession, withApiAuthRequired } from "@auth0/nextjs-auth0";
+import { withApiAuthRequired } from "@auth0/nextjs-auth0";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { NextRequest, NextResponse } from "next/server";
 import { OpenAI } from "openai";
