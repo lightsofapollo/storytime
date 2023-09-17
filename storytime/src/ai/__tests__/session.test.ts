@@ -40,7 +40,8 @@ maybe("session", () => {
     },
     30 * 1000
   );
-  it.skip(
+
+  it(
     "it should measure costs for openai",
     async () => {
       const session = new OpenAISession("gpt-3.5-turbo");

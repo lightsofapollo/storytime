@@ -1,5 +1,5 @@
 import endent from "endent";
-import parseMemoryOutput from "../memory";
+import { parseMemoryOutput } from "../memory";
 
 describe("memory test", () => {
   it("should parse memory correctly", () => {
@@ -17,6 +17,51 @@ describe("memory test", () => {
       Action: Got distracted by a passing robot (5)
     `;
 
-    console.log(parseMemoryOutput(memories));
+    console.log(parseMemoryOutput("1", memories));
+    const output = parseMemoryOutput("1", memories);
+    expect(output).toEqual({
+      recalls: [
+        {
+          storyMetadataId: "1",
+          text: "Created a beautiful painting",
+          timeAgo: "50 days ago",
+        },
+        {
+          storyMetadataId: "1",
+          text: "Went to the Robot Workshop",
+          timeAgo: "10 days ago",
+        },
+        {
+          storyMetadataId: "1",
+          text: "Explored the Dark Forest",
+          timeAgo: "5 days ago",
+        },
+        {
+          storyMetadataId: "1",
+          text: "Built a robot companion named Sparky",
+          timeAgo: "2 days ago",
+        },
+        {
+          storyMetadataId: "1",
+          text: "Discovered a hidden cave filled with rare minerals",
+          timeAgo: "1 day ago",
+        },
+      ],
+      actions: [
+        { storyMetadataId: "1", text: "Built a robot army", importance: 8 },
+        { storyMetadataId: "1", text: "Chased squirrels", importance: 4 },
+        { storyMetadataId: "1", text: "Sniffed a new rock", importance: 3 },
+        {
+          storyMetadataId: "1",
+          text: "Barked excitedly at a new invention",
+          importance: 7,
+        },
+        {
+          storyMetadataId: "1",
+          text: "Got distracted by a passing robot",
+          importance: 5,
+        },
+      ],
+    });
   });
 });
