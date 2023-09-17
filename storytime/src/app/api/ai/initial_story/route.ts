@@ -1,7 +1,8 @@
-import { TemplateModelTypes } from "@/templates/base";
-import FirstStoryTemplate from "@/templates/first_story";
+import { TemplateModelTypes } from "@/ai/templates/base";
+import FirstStoryTemplate from "@/ai/templates/first_story";
 import prisma from "@/utils/db";
 import { getUser } from "@/utils/get_user";
+import logger from "@/utils/logger";
 import { storyToMemory } from "@/utils/story_to_memory";
 import { withApiAuthRequired } from "@auth0/nextjs-auth0";
 import { ReplicateStream, StreamingTextResponse } from "ai";
@@ -68,11 +69,12 @@ const handler = async function (req: NextRequest) {
       const story = await prisma.story.findFirst({
         where: {
           storyMetadataId: results.id,
-          chapter: 0,
         },
       });
+      logger.info({ story }, "Story");
 
       if (!story) {
+        logger.info({ storyMetadataId: results.id }, "Creating new story");
         await prisma.$transaction([
           prisma.story.create({
             data: {
@@ -89,6 +91,7 @@ const handler = async function (req: NextRequest) {
           }),
         ]);
       } else {
+        logger.info({ storyMetadataId: results.id }, "Updating story");
         await prisma.$transaction([
           prisma.actionMemory.createMany({
             data: memory.actions,
@@ -104,6 +107,7 @@ const handler = async function (req: NextRequest) {
             },
             create: {
               storyMetadataId: results.id,
+              chapter: 0,
               text: completion,
             },
             update: {
@@ -112,6 +116,7 @@ const handler = async function (req: NextRequest) {
           }),
         ]);
       }
+      logger.info({ storyMetadataId: results.id }, "Created story");
     },
   });
   return new StreamingTextResponse(stream);

@@ -84,6 +84,19 @@ export const appRouter = t.router({
         }),
       ]);
 
+      logger.info(
+        {
+          id: meta.id,
+          title: meta.title,
+          characterSheetCount,
+          summaryCount,
+          recallMemoryCount,
+          actionMemoryCount,
+          storyCount,
+        },
+        "Story state"
+      );
+
       return {
         id: meta.id,
         title: meta.title,
@@ -208,6 +221,30 @@ export const appRouter = t.router({
       });
 
       return summary;
+    }),
+
+  getPreviousStory: t.procedure
+    .input(
+      z.object({
+        storyMetadataId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const meta = await storyMetaFromCtx(input.storyMetadataId, ctx);
+      if (!meta) {
+        throw new Error("Story not found");
+      }
+
+      const story = await prisma.story.findFirst({
+        where: {
+          storyMetadataId: meta.id,
+        },
+        orderBy: {
+          chapter: "desc",
+        },
+      });
+
+      return story;
     }),
 });
 

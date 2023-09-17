@@ -1,5 +1,5 @@
 import { parseMemoryOutput } from "@/parsers/memory";
-import MemoryTemplate from "@/templates/memory";
+import MemoryTemplate from "@/ai/templates/memory";
 import OpenAI from "openai";
 
 const openai = new OpenAI();

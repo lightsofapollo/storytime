@@ -1,6 +1,6 @@
 import { parseMemoryOutput } from "@/parsers/memory";
-import MemoryTemplate from "@/templates/memory";
-import SummaryTemplate from "@/templates/summary";
+import MemoryTemplate from "@/ai/templates/memory";
+import SummaryTemplate from "@/ai/templates/summary";
 import prisma from "@/utils/db";
 import { getUser } from "@/utils/get_user";
 import logger from "@/utils/logger";

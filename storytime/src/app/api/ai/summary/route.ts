@@ -1,4 +1,4 @@
-import SummaryTemplate from "@/templates/summary";
+import SummaryTemplate from "@/ai/templates/summary";
 import prisma from "@/utils/db";
 import { getUser } from "@/utils/get_user";
 import logger from "@/utils/logger";

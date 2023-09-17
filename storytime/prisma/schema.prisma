@@ -32,13 +32,15 @@ model Summary {
 
 model Story {
   id              String         @id @default(uuid()) @db.Uuid
-  chapter         Int            @unique @default(autoincrement())
+  chapter         Int            @default(autoincrement())
   text            String         @db.Text
   StoryMetadata   StoryMetadata  @relation(fields: [storyMetadataId], references: [id])
   storyMetadataId String         @db.Uuid
   createdAt       DateTime       @default(now())
   ActionMemory    ActionMemory[]
   RecallMemory    RecallMemory[]
+
+  @@unique([chapter, storyMetadataId])
 }
 
 model ActionMemory {

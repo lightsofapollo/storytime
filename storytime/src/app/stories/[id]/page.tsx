@@ -1,11 +1,6 @@
-import { trpc } from "@/utils/trpc";
-import { Container } from "@mui/material";
-import EnterCharacterSheet from "./create_character_sheet/EnterCharacterSheet";
-import EnterSummary from "./create_summary/EnterSummary";
-import EnterMemories from "./create_memories/EnterMemories";
-import EnterFirstStory from "./create_first_story/EnterFirstStory";
 import { api } from "@/trpc/server";
 import { redirect } from "next/navigation";
+import ContinueStory from "./ContinueStory";
 
 export default async function StoryPage({
   params: { id },
@@ -18,12 +13,16 @@ export default async function StoryPage({
     return <div>Story not found</div>;
   }
 
+  console.log(state);
   if (!state.hasCharacterSheet) {
     redirect(`/stories/${id}/create_character_sheet`);
   } else if (!state.hasSummary) {
+    redirect(`/stories/${id}/create_summary`);
   } else if (!state.hasMemories) {
+    redirect(`/stories/${id}/create_memories`);
   } else if (!state.hasStories) {
+    redirect(`/stories/${id}/create_first_story`);
   }
 
-  return <Container>Continue to the next step</Container>;
+  return <ContinueStory state={state} />;
 }
