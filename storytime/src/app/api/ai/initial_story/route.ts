@@ -57,7 +57,7 @@ const handler = async function (req: NextRequest) {
     version: "f4e2de70d66816a838a89eeeb621910adffb0dd0baba3976c96980970978018d",
     input: {
       prompt: template.format(TemplateModelTypes.LLAMA2),
-      max_new_tokens: 1000,
+      max_new_tokens: 3000,
     },
   });
 

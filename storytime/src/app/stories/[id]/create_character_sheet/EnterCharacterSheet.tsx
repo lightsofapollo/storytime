@@ -1,14 +1,25 @@
+"use client";
+
+import logger from "@/utils/logger";
 import { Container, TextField } from "@mui/material";
 import { useCompletion } from "ai/react";
-import { useForm } from "react-hook-form";
+import Link from "next/link";
+import { redirect, useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 
 type Props = {
   id: string;
   title: string;
+  hasCharacterSheet: boolean;
 };
 
-export default function EnterCharacterSheet({ id, title }: Props) {
+export default function EnterCharacterSheet({
+  id,
+  title,
+  hasCharacterSheet,
+}: Props) {
+  const router = useRouter();
+
   const {
     completion,
     input,
@@ -19,6 +30,12 @@ export default function EnterCharacterSheet({ id, title }: Props) {
   } = useCompletion({
     api: "/api/ai/character",
     body: { storyMetadataId: id },
+    onFinish() {
+      logger.info({ hasCharacterSheet }, "Finished generating character sheet");
+      if (!hasCharacterSheet) {
+        router.push(`/stories/${id}/create_summary`);
+      }
+    },
   });
 
   return (
@@ -44,6 +61,11 @@ export default function EnterCharacterSheet({ id, title }: Props) {
       <Container>
         <h3>Character sheet results</h3>
         <ReactMarkdown>{completion}</ReactMarkdown>
+        {hasCharacterSheet && (
+          <Link href={`/stories/${id}/create_summary`}>
+            Next create summary
+          </Link>
+        )}
       </Container>
     </Container>
   );

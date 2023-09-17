@@ -24,32 +24,41 @@ function rawParse(memory: string) {
 }
 
 export type RecallMemory = {
-  type: "recall";
+  storyMetadataId: string;
   text: string;
   timeAgo: string;
 };
 
 export type ActionMemory = {
-  type: "action";
+  storyMetadataId: string;
   text: string;
   importance: number;
 };
 
 export function parseMemoryOutput(
+  storyMetadataId: string,
   input: string
-): (RecallMemory | ActionMemory)[] {
-  return rawParse(input).map((memory) => {
+): {
+  recalls: RecallMemory[];
+  actions: ActionMemory[];
+} {
+  const recalls: RecallMemory[] = [];
+  const actions: ActionMemory[] = [];
+  rawParse(input).forEach((memory) => {
     if (memory.type == "action") {
-      return {
-        type: "action",
+      actions.push({
+        storyMetadataId,
         text: memory.description,
         importance: parseInt(memory.importance, 10),
-      } as ActionMemory;
+      });
+    } else {
+      recalls.push({
+        storyMetadataId,
+        text: memory.description,
+        timeAgo: memory.importance,
+      });
     }
-    return {
-      type: "recall",
-      text: memory.description,
-      timeAgo: memory.importance,
-    } as RecallMemory;
   });
+
+  return { recalls, actions };
 }

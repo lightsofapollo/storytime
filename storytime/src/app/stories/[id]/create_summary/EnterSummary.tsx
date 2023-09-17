@@ -1,22 +1,40 @@
-import { Container, TextField } from "@mui/material";
+"use client";
+
+import { Container } from "@mui/material";
 import { useCompletion } from "ai/react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 
 type Props = {
   id: string;
   title: string;
+  hasSummary: boolean;
 };
 
-export default function EnterSummary({ id, title }: Props) {
-  const { completion, isLoading, complete, handleSubmit } = useCompletion({
+export default function EnterSummary({ id, title, hasSummary }: Props) {
+  const router = useRouter();
+  const { completion, isLoading, complete } = useCompletion({
     api: "/api/ai/summary",
     body: { storyMetadataId: id },
+    onFinish() {
+      if (!hasSummary) {
+        router.push(`/stories/${id}/create_memories`);
+      }
+    },
   });
 
   useEffect(() => {
+    if (!hasSummary) {
+      complete("");
+    }
+  }, [hasSummary]);
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     complete("");
-  }, []);
+    e.preventDefault();
+  }
 
   return (
     <Container>
@@ -31,6 +49,9 @@ export default function EnterSummary({ id, title }: Props) {
       <Container>
         <h3>Summary results</h3>
         <ReactMarkdown>{completion}</ReactMarkdown>
+        {hasSummary && (
+          <Link href={`/stories/${id}/create_memories`}>Memories</Link>
+        )}
       </Container>
     </Container>
   );

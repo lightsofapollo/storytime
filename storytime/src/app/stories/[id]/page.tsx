@@ -1,56 +1,29 @@
-"use client";
-
 import { trpc } from "@/utils/trpc";
 import { Container } from "@mui/material";
-import EnterCharacterSheet from "./EnterCharacterSheet";
-import EnterSummary from "./EnterSummary";
-import EnterMemories from "./EnterMemories";
-import EnterFirstStory from "./EnterFirstStory";
+import EnterCharacterSheet from "./create_character_sheet/EnterCharacterSheet";
+import EnterSummary from "./create_summary/EnterSummary";
+import EnterMemories from "./create_memories/EnterMemories";
+import EnterFirstStory from "./create_first_story/EnterFirstStory";
+import { api } from "@/trpc/server";
+import { redirect } from "next/navigation";
 
-export default function StoryPage({
+export default async function StoryPage({
   params: { id },
 }: {
   params: { id: string };
 }) {
-  const query = trpc.getStoryState.useQuery({ id });
+  const state = await api.getStoryState.query({ id });
 
-  if (query.isLoading) {
-    return (
-      <>
-        <Container>{<h1>Story {id}</h1>}</Container>
-        <Container>loading...</Container>
-      </>
-    );
+  if (!state) {
+    return <div>Story not found</div>;
   }
 
-  if (query.isError) {
-    return (
-      <Container>
-        <Container>{<h1>Story {id}</h1>}</Container>; Error:{" "}
-        <Container>{query.error.message}</Container>
-      </Container>
-    );
+  if (!state.hasCharacterSheet) {
+    redirect(`/stories/${id}/create_character_sheet`);
+  } else if (!state.hasSummary) {
+  } else if (!state.hasMemories) {
+  } else if (!state.hasStories) {
   }
 
-  if (query.data) {
-    if (!query.data.hasCharacterSheet) {
-      return (
-        <EnterCharacterSheet id={query.data.id} title={query.data.title} />
-      );
-    }
-
-    if (!query.data.hasSummary) {
-      return <EnterSummary id={query.data.id} title={query.data.title} />;
-    }
-
-    if (!query.data.hasMemories) {
-      return <EnterMemories id={query.data.id} title={query.data.title} />;
-    }
-
-    if (!query.data.hasStories) {
-      return <EnterFirstStory id={query.data.id} title={query.data.title} />;
-    }
-  }
-
-  return <div></div>;
+  return <Container>Continue to the next step</Container>;
 }

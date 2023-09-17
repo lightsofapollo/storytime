@@ -6,7 +6,7 @@ import "@fontsource/roboto/700.css";
 import type { Metadata } from "next";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 import { Inter } from "next/font/google";
-import { TrpcProvider } from "@/utils/trpc-provider";
+import { TrpcProvider } from "@/utils/trpc_provider";
 
 const inter = Inter({ subsets: ["latin"] });
 

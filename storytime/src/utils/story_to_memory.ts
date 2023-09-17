@@ -18,19 +18,5 @@ export async function storyToMemory(storyMetadataId: string, prompt: string) {
     ],
   });
   const result = response.choices[0].message.content;
-  const memories = parseMemoryOutput(result || "");
-  const actions = [];
-  const recalls = [];
-
-  for (const memory of memories) {
-    if (memory.type === "action") {
-      const { type, ...item } = memory;
-      actions.push({ storyMetadataId, ...item });
-    } else {
-      const { type, ...item } = memory;
-      recalls.push({ storyMetadataId, ...item });
-    }
-  }
-
-  return { actions, recalls };
+  return parseMemoryOutput(storyMetadataId, result || "");
 }

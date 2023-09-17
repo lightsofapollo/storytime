@@ -1,3 +1,5 @@
+import { parseMemoryOutput } from "@/parsers/memory";
+import MemoryTemplate from "@/templates/memory";
 import SummaryTemplate from "@/templates/summary";
 import prisma from "@/utils/db";
 import { getUser } from "@/utils/get_user";
@@ -12,31 +14,26 @@ const openai = new OpenAI();
 const handler = async function (req: NextRequest) {
   const { user } = await getUser(req);
   const body: { prompt: string; storyMetadataId: string } = await req.json();
-  const { prompt: characterSheet, storyMetadataId } = body;
-
-  const storyMetadata = await prisma.storyMetadata.findUnique({
-    select: {
-      id: true,
-      userId: true,
-      CharacterSheet: true,
-    },
+  const { prompt, storyMetadataId } = body;
+  const meta = await prisma.storyMetadata.findFirst({
     where: {
       id: storyMetadataId,
       userId: user.id,
     },
+    select: {
+      Summary: true,
+    },
   });
 
-  if (!storyMetadata) {
-    logger.error({ storyMetadataId }, "Story metadata not found");
-    return new NextResponse(null, {
-      status: 404,
-    });
+  if (!meta) {
+    return new NextResponse(null, { status: 404 });
   }
 
-  const template = new SummaryTemplate(
-    storyMetadata.CharacterSheet?.text || ""
-  );
+  if (!meta.Summary) {
+    return new NextResponse(null, { status: 404, statusText: "No summary" });
+  }
 
+  const template = new MemoryTemplate(meta.Summary.summary);
   const response = await openai.chat.completions.create({
     model: "gpt-3.5-turbo",
     stream: true,
@@ -48,28 +45,34 @@ const handler = async function (req: NextRequest) {
     ],
   });
 
-  if (!storyMetadata) {
-    return new NextResponse(null, {
-      statusText: "Another users story",
-      status: 403,
-    });
-  }
-
   const stream = OpenAIStream(response, {
     async onCompletion(completion) {
-      await prisma.summary.deleteMany({
-        where: {
-          storyMetadataId,
-        },
-      });
+      const memories = parseMemoryOutput(storyMetadataId, completion);
+      // remove old memories...
       await prisma.$transaction([
-        prisma.summary.create({
-          data: {
+        prisma.actionMemory.deleteMany({
+          where: {
             storyMetadataId,
-            summary: completion,
+            storyId: null,
+          },
+        }),
+        prisma.recallMemory.deleteMany({
+          where: {
+            storyMetadataId,
+            storyId: null,
           },
         }),
       ]);
+
+      const result = await prisma.$transaction([
+        prisma.actionMemory.createMany({
+          data: memories.actions,
+        }),
+        prisma.recallMemory.createMany({
+          data: memories.recalls,
+        }),
+      ]);
+      logger.info({ result }, "Created memories");
     },
   });
   return new StreamingTextResponse(stream);
