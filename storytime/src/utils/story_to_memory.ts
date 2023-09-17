@@ -1,22 +1,26 @@
 import { parseMemoryOutput } from "@/parsers/memory";
 import MemoryTemplate from "@/ai/templates/memory";
-import OpenAI from "openai";
+import { Costs, Session } from "@/ai/session/session";
+import { text } from "stream/consumers";
 
-const openai = new OpenAI();
-
-export async function storyToMemory(storyMetadataId: string, prompt: string) {
+export async function storyToMemory(
+  session: Session,
+  storyMetadataId: string,
+  prompt: string
+) {
+  let cost: Costs | null = null;
   const template = new MemoryTemplate(prompt);
-
-  const response = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
-    stream: false,
-    messages: [
-      {
-        role: "user",
-        content: template.format(),
-      },
-    ],
+  const response = await session.createStream({
+    messages: [{ content: template }],
+    onCompletion(completion, _costs) {
+      cost = _costs;
+    },
   });
-  const result = response.choices[0].message.content;
-  return parseMemoryOutput(storyMetadataId, result || "");
+
+  // drain
+  const result = await text(response as any);
+  const memories = parseMemoryOutput(storyMetadataId, result || "");
+  console.log({ result, cost });
+  // cost should be populated by now...
+  return { memories, cost };
 }

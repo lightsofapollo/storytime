@@ -17,7 +17,6 @@ describe("memory test", () => {
       Action: Got distracted by a passing robot (5)
     `;
 
-    console.log(parseMemoryOutput("1", memories));
     const output = parseMemoryOutput("1", memories);
     expect(output).toEqual({
       recalls: [

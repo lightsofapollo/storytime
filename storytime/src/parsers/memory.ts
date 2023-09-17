@@ -46,10 +46,11 @@ export function parseMemoryOutput(
   const actions: ActionMemory[] = [];
   rawParse(input).forEach((memory) => {
     if (memory.type == "action") {
+      const importance = parseInt(memory.importance, 10);
       actions.push({
         storyMetadataId,
         text: memory.description,
-        importance: parseInt(memory.importance, 10),
+        importance: isNaN(importance) ? 0 : importance,
       });
     } else {
       recalls.push({

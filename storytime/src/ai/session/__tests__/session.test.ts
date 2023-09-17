@@ -1,7 +1,9 @@
 /*
  * @jest-environment node
  */
-import { OpenAISession, ReplicateSession } from "../session";
+import { ReplicateSession } from "../replicate";
+import { OpenAISession } from "../openai";
+import { MockSession } from "../mock";
 import { text } from "node:stream/consumers";
 
 const maybe = process.env.JEST_E2E ? describe : describe.skip;
@@ -14,6 +16,26 @@ function defer(): { promise: Promise<any>; resolve: (value: any) => void } {
   return deferred as any;
 }
 
+describe("mock session", () => {
+  it("should mock session", async () => {
+    const result = "i am the result and I am longer than the chunk size";
+    const session = new MockSession([result]);
+    const deferred = defer();
+    const stream = await session.createStream({
+      messages: [{ content: "Hello this is a world of amazing ai things" }],
+      maxTokens: 10,
+      onCompletion: async function (completion, cost) {
+        expect(cost.cost).toBe(0);
+        deferred.resolve(null);
+      },
+    });
+    // consume the whole stream...
+    const output = await text(stream as any);
+    expect(output).toBe(result);
+    await deferred.promise;
+  });
+});
+
 maybe("session", () => {
   it(
     "it should measure costs for replicate",
@@ -25,9 +47,6 @@ maybe("session", () => {
       const stream = await session.createStream({
         messages: [{ content: "Hello this is a world of amazing ai things" }],
         maxTokens: 10,
-        onStart: async function () {
-          console.log("starting...");
-        },
         onCompletion: async function (completion, cost) {
           console.log({ completion, cost });
           expect(cost.cost).toBeGreaterThan(0);
@@ -49,9 +68,6 @@ maybe("session", () => {
       const stream = await session.createStream({
         messages: [{ content: "Hello this is a world of amazing ai things" }],
         maxTokens: 10,
-        onStart: async function () {
-          console.log("starting...");
-        },
         onCompletion: async function (completion, cost) {
           console.log({ completion, cost });
           expect(cost.cost).toBeGreaterThan(0);

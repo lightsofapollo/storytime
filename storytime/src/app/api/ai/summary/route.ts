@@ -1,18 +1,21 @@
+import { sessionWithMockFallback } from "@/ai/session/mock";
+import { OpenAISession } from "@/ai/session/openai";
 import SummaryTemplate from "@/ai/templates/summary";
 import prisma from "@/utils/db";
 import { getUser } from "@/utils/get_user";
 import logger from "@/utils/logger";
 import { withApiAuthRequired } from "@auth0/nextjs-auth0";
-import { OpenAIStream, StreamingTextResponse } from "ai";
+import { StreamingTextResponse } from "ai";
 import { NextRequest, NextResponse } from "next/server";
-import { OpenAI } from "openai";
 
-const openai = new OpenAI();
+const aiSession = sessionWithMockFallback(() => {
+  return new OpenAISession("gpt-3.5-turbo");
+}, ["A nice story summary", "A terrible story summary"]);
 
 const handler = async function (req: NextRequest) {
   const { user } = await getUser(req);
   const body: { prompt: string; storyMetadataId: string } = await req.json();
-  const { prompt: characterSheet, storyMetadataId } = body;
+  const { storyMetadataId } = body;
 
   const storyMetadata = await prisma.storyMetadata.findUnique({
     select: {
@@ -37,17 +40,6 @@ const handler = async function (req: NextRequest) {
     storyMetadata.CharacterSheet?.text || ""
   );
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
-    stream: true,
-    messages: [
-      {
-        role: "user",
-        content: template.format(),
-      },
-    ],
-  });
-
   if (!storyMetadata) {
     return new NextResponse(null, {
       statusText: "Another users story",
@@ -55,7 +47,8 @@ const handler = async function (req: NextRequest) {
     });
   }
 
-  const stream = OpenAIStream(response, {
+  const stream = await aiSession.createStream({
+    messages: [{ content: template }],
     async onCompletion(completion) {
       await prisma.summary.deleteMany({
         where: {
