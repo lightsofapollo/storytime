@@ -16,7 +16,6 @@ export default function CreateStory() {
   const mutation = trpc.createStoryMeta.useMutation();
 
   function onSubmit(data: Inputs) {
-    console.log(data);
     mutation.mutate(data, {
       onSuccess: (result) => {
         router.push(`/stories/${result.id}`);

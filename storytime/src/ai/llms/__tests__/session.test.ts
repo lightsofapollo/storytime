@@ -48,7 +48,6 @@ maybe("session", () => {
         messages: [{ content: "Hello this is a world of amazing ai things" }],
         maxTokens: 10,
         onCompletion: async function (completion, cost) {
-          console.log({ completion, cost });
           expect(cost.cost).toBeGreaterThan(0);
           deferred.resolve(null);
         },
@@ -69,7 +68,6 @@ maybe("session", () => {
         messages: [{ content: "Hello this is a world of amazing ai things" }],
         maxTokens: 10,
         onCompletion: async function (completion, cost) {
-          console.log({ completion, cost });
           expect(cost.cost).toBeGreaterThan(0);
           expect(cost.inputTokens).toBe(10);
           expect(cost.outputTokens).toBe(10);

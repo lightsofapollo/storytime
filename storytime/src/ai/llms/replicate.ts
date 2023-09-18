@@ -95,7 +95,6 @@ export class ReplicateSession extends BaseSession {
           totalTokens: 0,
           totalTime,
         });
-        console.log("done ~~~~~");
       }
     };
 

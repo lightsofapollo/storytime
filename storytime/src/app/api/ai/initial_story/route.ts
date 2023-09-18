@@ -53,7 +53,7 @@ const handler = async function (req: NextRequest) {
   );
 
   const stream = await llms.tellFirstStory({ storyMetadataId }).createStream({
-    maxTokens: 10,
+    maxTokens: 4000,
     messages: [{ content: template }],
     async onCompletion(completion) {
       const { cost: memoryCost, memories } = await storyToMemory(
@@ -74,6 +74,8 @@ const handler = async function (req: NextRequest) {
         await prisma.$transaction([
           prisma.story.create({
             data: {
+              prompt: results.prompt,
+              userId: user.id,
               storyMetadataId: results.id,
               chapter: 0,
               text: completion,
@@ -105,13 +107,17 @@ const handler = async function (req: NextRequest) {
               chapter: 0,
             },
             create: {
+              userId: user.id,
               storyMetadataId: results.id,
               chapter: 0,
               text: completion,
+              generated: true,
+              prompt: results.prompt,
             },
             update: {
               chapter: 0,
               text: completion,
+              generated: true,
             },
           }),
         ]);

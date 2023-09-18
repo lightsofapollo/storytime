@@ -1,15 +1,13 @@
-import { CharacterSheetTemplate } from "@/ai/templates/character_sheet";
+import { LLMs } from "@/ai/llms";
 import NextActionsTemplate from "@/ai/templates/next_actions";
 import prisma from "@/utils/db";
 import { getUser } from "@/utils/get_user";
-import { getSession, withApiAuthRequired } from "@auth0/nextjs-auth0";
-import { OpenAIStream, StreamingTextResponse } from "ai";
+import { withApiAuthRequired } from "@auth0/nextjs-auth0";
+import { StreamingTextResponse } from "ai";
 import { NextRequest, NextResponse } from "next/server";
-import { OpenAI } from "openai";
-
-const openai = new OpenAI();
 
 const handler = async function (req: NextRequest) {
+  const llms = new LLMs();
   const { user } = await getUser(req);
   const body: { prompt: string; storyMetadataId: string; storyId: string } =
     await req.json();
@@ -44,18 +42,12 @@ const handler = async function (req: NextRequest) {
   }
 
   const template = new NextActionsTemplate(story.text);
-  const response = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
-    stream: true,
-    messages: [
-      {
-        role: "user",
-        content: template.format(),
-      },
-    ],
-  });
+  const stream = await llms
+    .storyChoices({ storyId, storyMetadataId })
+    .createStream({
+      messages: [{ content: template }],
+    });
 
-  const stream = OpenAIStream(response);
   return new StreamingTextResponse(stream);
 };
 

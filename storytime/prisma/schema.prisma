@@ -14,6 +14,7 @@ model User {
   id            String          @id @default(uuid()) @db.Uuid
   foreignId     String          @unique
   StoryMetadata StoryMetadata[]
+  Story         Story[]
 }
 
 model CharacterSheet {
@@ -33,12 +34,16 @@ model Summary {
 model Story {
   id              String         @id @default(uuid()) @db.Uuid
   chapter         Int            @default(autoincrement())
+  prompt          String         @db.Text
   text            String         @db.Text
+  generated       Boolean        @default(false)
   StoryMetadata   StoryMetadata  @relation(fields: [storyMetadataId], references: [id])
   storyMetadataId String         @db.Uuid
+  userId          String         @db.Uuid
   createdAt       DateTime       @default(now())
   ActionMemory    ActionMemory[]
   RecallMemory    RecallMemory[]
+  User            User           @relation(fields: [userId], references: [id])
   Cost            Cost[]
 
   @@unique([chapter, storyMetadataId])

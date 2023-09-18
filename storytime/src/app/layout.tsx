@@ -7,6 +7,8 @@ import type { Metadata } from "next";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 import { Inter } from "next/font/google";
 import { TrpcProvider } from "@/utils/trpc_provider";
+import { Container, List, ListItem } from "@mui/material";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 export const revalidate = 0;
@@ -26,6 +28,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <Container>
+          <List>
+            <ListItem>
+              <Link href="/stories">Stories</Link>
+            </ListItem>
+          </List>
+        </Container>
         <UserProvider>
           <TrpcProvider>{children}</TrpcProvider>
         </UserProvider>

@@ -6,7 +6,6 @@ export default async function Home() {
   const user = await getSession();
   if (user) {
     const stories = await api.listStoryMeta.query();
-    console.log(stories);
   }
 
   if (!user) {

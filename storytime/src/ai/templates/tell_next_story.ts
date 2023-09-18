@@ -32,7 +32,7 @@ export default class TellNextStoryTemplate extends BaseTemplate {
         ${memory}
         </memory>
         
-        The chapter should resolve {choice}
+        The chapter should resolve ${choice}
         `;
   }
 }

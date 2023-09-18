@@ -144,4 +144,22 @@ export class LLMs {
       });
     },
   });
+
+  tellNextStory = llmSession<StoryMetaCtx>({
+    mock: ["a cool story", "a bad story"],
+    session() {
+      return new ReplicateSession(
+        "f4e2de70d66816a838a89eeeb621910adffb0dd0baba3976c96980970978018d"
+      );
+    },
+    async onCompletion(ctx, cost, completion, opts) {
+      await prisma.cost.create({
+        data: {
+          action: "tellNextStory",
+          storyMetadataId: ctx.storyMetadataId,
+          cost: cost.cost,
+        },
+      });
+    },
+  });
 }

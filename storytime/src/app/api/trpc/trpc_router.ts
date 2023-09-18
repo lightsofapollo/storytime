@@ -23,11 +23,6 @@ async function storyMetaFromCtx(
 }
 
 export const appRouter = t.router({
-  getUsers: t.procedure.query(({ ctx }) => {
-    console.log({ ctx });
-    return [];
-  }),
-
   getStoryState: t.procedure
     .input(
       z.object({
@@ -259,6 +254,50 @@ export const appRouter = t.router({
       );
 
       return story;
+    }),
+
+  getStory: t.procedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      return await prisma.story.findFirst({
+        where: {
+          id: input.id,
+          userId: ctx.user.id,
+        },
+      });
+    }),
+
+  chooseStoryArc: t.procedure
+    .input(
+      z.object({
+        storyMetadataId: z.string(),
+        prompt: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const meta = await storyMetaFromCtx(input.storyMetadataId, ctx);
+      if (!meta) {
+        throw new Error("Story not found");
+      }
+
+      logger.info(
+        { storyMetadataId: meta.id, prompt: input.prompt },
+        "Choosing story arc"
+      );
+
+      return await prisma.story.create({
+        data: {
+          storyMetadataId: meta.id,
+          userId: ctx.user.id,
+          prompt: input.prompt,
+          generated: false,
+          text: "",
+        },
+      });
     }),
 });
 

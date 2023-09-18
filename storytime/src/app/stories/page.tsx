@@ -1,14 +1,9 @@
-"use client";
-
-import { trpc } from "@/utils/trpc";
+import { api } from "@/trpc/server";
 import Link from "next/link";
 import React from "react";
 
-export default function Stories() {
-  let { data: stories, isLoading, isFetching } = trpc.listStoryMeta.useQuery();
-  if (isLoading || isFetching) {
-    return <p>Loading...</p>;
-  }
+export default async function Stories() {
+  let stories = await api.listStoryMeta.query();
 
   return (
     <div

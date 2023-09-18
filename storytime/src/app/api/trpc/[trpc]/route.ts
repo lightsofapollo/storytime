@@ -9,7 +9,6 @@ import { NextRequest } from "next/server";
 
 const handler = withApiAuthRequired(
   (request: any /* this works but requires hacky use of any */) => {
-    console.log(`incoming request ${request.url}`);
     return fetchRequestHandler({
       endpoint: "/api/trpc",
       req: request,
