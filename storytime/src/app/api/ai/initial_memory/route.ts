@@ -1,5 +1,6 @@
-import { sessionWithMockFallback } from "@/ai/session/mock";
-import { OpenAISession } from "@/ai/session/openai";
+import { LLMs } from "@/ai/llms";
+import { sessionWithMockFallback } from "@/ai/llms/mock";
+import { OpenAISession } from "@/ai/llms/openai";
 import MemoryTemplate, { MOCK_MEMORY_OUTPUT } from "@/ai/templates/memory";
 import { parseMemoryOutput } from "@/parsers/memory";
 import prisma from "@/utils/db";
@@ -9,14 +10,11 @@ import { withApiAuthRequired } from "@auth0/nextjs-auth0";
 import { StreamingTextResponse } from "ai";
 import { NextRequest, NextResponse } from "next/server";
 
-const aiSession = sessionWithMockFallback(() => {
-  return new OpenAISession("gpt-3.5-turbo");
-}, [MOCK_MEMORY_OUTPUT]);
-
 const handler = async function (req: NextRequest) {
+  const llms = new LLMs();
   const { user } = await getUser(req);
   const body: { prompt: string; storyMetadataId: string } = await req.json();
-  const { prompt, storyMetadataId } = body;
+  const { storyMetadataId } = body;
   const meta = await prisma.storyMetadata.findFirst({
     where: {
       id: storyMetadataId,
@@ -37,7 +35,7 @@ const handler = async function (req: NextRequest) {
 
   const template = new MemoryTemplate(meta.Summary.summary);
 
-  const stream = await aiSession.createStream({
+  const stream = await llms.memories({ storyMetadataId }).createStream({
     messages: [{ content: template }],
     async onCompletion(completion) {
       const memories = parseMemoryOutput(storyMetadataId, completion);

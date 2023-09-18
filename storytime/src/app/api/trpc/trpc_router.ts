@@ -244,6 +244,20 @@ export const appRouter = t.router({
         },
       });
 
+      const allStories = await prisma.story.findMany({
+        where: {
+          storyMetadataId: meta.id,
+        },
+        orderBy: {
+          chapter: "desc",
+        },
+      });
+
+      logger.info(
+        { storyMetadataId: meta.id, story, allStories },
+        "Getting previous story"
+      );
+
       return story;
     }),
 });

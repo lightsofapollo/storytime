@@ -3,9 +3,14 @@ import OpenAI from "openai";
 import { getEncoding, Tiktoken } from "js-tiktoken";
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions.mjs";
 import { OPENAI_COSTS, OpenAICostModel } from "../cost";
-import { Session, StreamOptions, MessageType, formatIfNeeded } from "./session";
+import {
+  BaseSession,
+  StreamOptions,
+  MessageType,
+  formatIfNeeded,
+} from "./base_session";
 
-export class OpenAISession extends Session {
+export class OpenAISession extends BaseSession {
   openai: OpenAI;
   encoder: Tiktoken;
   model: ChatCompletionCreateParamsBase["model"];

@@ -1,6 +1,13 @@
 import endent from "endent";
 import { BaseTemplate } from "./base";
 
+export const MOCK_TELL_NEXT_STORY = endent`
+  Good idea here are your list of choices:
+
+  1. Go to the store
+  2. Go to the park
+  3. Go to the beach`;
+
 export default class TellNextStoryTemplate extends BaseTemplate {
   constructor(sheet: string, story: string, memory: string, choice: string) {
     super();

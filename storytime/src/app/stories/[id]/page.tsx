@@ -1,6 +1,7 @@
 import { api } from "@/trpc/server";
 import { redirect } from "next/navigation";
 import ContinueStory from "./ContinueStory";
+import logger from "@/utils/logger";
 
 export default async function StoryPage({
   params: { id },
@@ -13,7 +14,6 @@ export default async function StoryPage({
     return <div>Story not found</div>;
   }
 
-  console.log(state);
   if (!state.hasCharacterSheet) {
     redirect(`/stories/${id}/create_character_sheet`);
   } else if (!state.hasSummary) {

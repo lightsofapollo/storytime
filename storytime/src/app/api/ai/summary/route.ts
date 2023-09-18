@@ -1,5 +1,6 @@
-import { sessionWithMockFallback } from "@/ai/session/mock";
-import { OpenAISession } from "@/ai/session/openai";
+import { LLMs } from "@/ai/llms";
+import { sessionWithMockFallback } from "@/ai/llms/mock";
+import { OpenAISession } from "@/ai/llms/openai";
 import SummaryTemplate from "@/ai/templates/summary";
 import prisma from "@/utils/db";
 import { getUser } from "@/utils/get_user";
@@ -8,11 +9,8 @@ import { withApiAuthRequired } from "@auth0/nextjs-auth0";
 import { StreamingTextResponse } from "ai";
 import { NextRequest, NextResponse } from "next/server";
 
-const aiSession = sessionWithMockFallback(() => {
-  return new OpenAISession("gpt-3.5-turbo");
-}, ["A nice story summary", "A terrible story summary"]);
-
 const handler = async function (req: NextRequest) {
+  const llms = new LLMs();
   const { user } = await getUser(req);
   const body: { prompt: string; storyMetadataId: string } = await req.json();
   const { storyMetadataId } = body;
@@ -47,7 +45,7 @@ const handler = async function (req: NextRequest) {
     });
   }
 
-  const stream = await aiSession.createStream({
+  const stream = await llms.summary({ storyMetadataId }).createStream({
     messages: [{ content: template }],
     async onCompletion(completion) {
       await prisma.summary.deleteMany({

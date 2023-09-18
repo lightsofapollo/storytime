@@ -1,16 +1,17 @@
 import { parseMemoryOutput } from "@/parsers/memory";
 import MemoryTemplate from "@/ai/templates/memory";
-import { Costs, Session } from "@/ai/session/session";
+import { Costs, BaseSession } from "@/ai/llms/base_session";
 import { text } from "stream/consumers";
+import { LLMs } from "@/ai/llms";
 
 export async function storyToMemory(
-  session: Session,
+  llms: LLMs,
   storyMetadataId: string,
   prompt: string
 ) {
   let cost: Costs | null = null;
   const template = new MemoryTemplate(prompt);
-  const response = await session.createStream({
+  const response = await llms.memories({ storyMetadataId }).createStream({
     messages: [{ content: template }],
     onCompletion(completion, _costs) {
       cost = _costs;
@@ -20,7 +21,6 @@ export async function storyToMemory(
   // drain
   const result = await text(response as any);
   const memories = parseMemoryOutput(storyMetadataId, result || "");
-  console.log({ result, cost });
   // cost should be populated by now...
   return { memories, cost };
 }

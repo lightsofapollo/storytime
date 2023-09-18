@@ -1,21 +1,32 @@
 import { ReplicateStream } from "ai";
 import Replicate from "replicate";
 import { experimental_buildLlama2Prompt } from "ai/prompts";
-import { Session, StreamOptions, formatIfNeeded, MessageType } from "./session";
+import {
+  BaseSession,
+  StreamOptions,
+  formatIfNeeded,
+  MessageType,
+} from "./base_session";
 
-export class ReplicateSession extends Session {
+export class ReplicateSession extends BaseSession {
   replicate: Replicate;
   version: string;
   llamaPrompt?: boolean = true;
+  // https://replicate.com/pricing for A40
   gpuCost: number = 0.000725;
 
-  constructor(version: string, llamaPrompt: boolean = true) {
+  constructor(
+    version: string,
+    llamaPrompt: boolean = true,
+    gpuCost: number = 0.000725
+  ) {
     super();
     this.version = version;
     this.replicate = new Replicate({
       auth: process.env.REPLICATE_API_TOKEN || "",
     });
     this.llamaPrompt = llamaPrompt;
+    this.gpuCost = gpuCost;
   }
 
   async createStream(options: StreamOptions): Promise<ReadableStream> {
@@ -77,13 +88,14 @@ export class ReplicateSession extends Session {
         const totalTime = predictTime * 1000;
         const cost = predictTime * this.gpuCost;
 
-        return await options.onCompletion(completion, {
+        await options.onCompletion(completion, {
           cost: cost,
           inputTokens: 0,
           outputTokens: 0,
           totalTokens: 0,
           totalTime,
         });
+        console.log("done ~~~~~");
       }
     };
 

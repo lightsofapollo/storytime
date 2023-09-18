@@ -1,4 +1,4 @@
-import { Session, StreamOptions } from "./session";
+import { BaseSession, StreamOptions } from "./base_session";
 
 const CHUNK = 4;
 
@@ -37,7 +37,7 @@ async function iteratorToStream(
   });
 }
 
-export class MockSession extends Session {
+export class MockSession extends BaseSession {
   outputs: string[] = [];
 
   constructor(outputs: string[]) {
@@ -60,9 +60,9 @@ export class MockSession extends Session {
 }
 
 export function sessionWithMockFallback(
-  sessionGen: () => Session,
+  sessionGen: () => BaseSession,
   mock: string[]
-): Session {
+): BaseSession {
   if (process.env.NODE_ENV === "test") {
     return new MockSession(mock);
   }

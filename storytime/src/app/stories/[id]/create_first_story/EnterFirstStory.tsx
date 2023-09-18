@@ -18,9 +18,7 @@ export default function EnterFirstStory({ id, title, hasStories }: Props) {
     api: "/api/ai/initial_story",
     body: { storyMetadataId: id },
     onFinish() {
-      if (!hasStories) {
-        router.push(`/stories/${id}/`);
-      }
+      router.push(`/stories/${id}/?time=${Date.now()}`);
     },
   });
 

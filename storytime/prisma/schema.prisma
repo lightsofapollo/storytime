@@ -39,6 +39,7 @@ model Story {
   createdAt       DateTime       @default(now())
   ActionMemory    ActionMemory[]
   RecallMemory    RecallMemory[]
+  Cost            Cost[]
 
   @@unique([chapter, storyMetadataId])
 }
@@ -80,4 +81,19 @@ model StoryMetadata {
   Story          Story[]
   ActionMemory   ActionMemory[]
   RecallMemory   RecallMemory[]
+  Cost           Cost[]
+}
+
+model Cost {
+  id              String        @id @default(uuid()) @db.Uuid
+  cost            Float
+  action          String
+  storyMetadataId String        @db.Uuid
+  StoryMetadata   StoryMetadata @relation(fields: [storyMetadataId], references: [id])
+  Story           Story?        @relation(fields: [storyId], references: [id])
+  storyId         String?       @db.Uuid
+  createdAt       DateTime      @default(now())
+
+  @@index([action])
+  @@index([storyMetadataId])
 }

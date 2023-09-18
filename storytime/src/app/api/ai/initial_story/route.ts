@@ -1,5 +1,7 @@
-import { sessionWithMockFallback } from "@/ai/session/mock";
-import { ReplicateSession } from "@/ai/session/replicate";
+import { LLMs } from "@/ai/llms";
+import { sessionWithMockFallback } from "@/ai/llms/mock";
+import { OpenAISession } from "@/ai/llms/openai";
+import { ReplicateSession } from "@/ai/llms/replicate";
 import FirstStoryTemplate from "@/ai/templates/first_story";
 import prisma from "@/utils/db";
 import { getUser } from "@/utils/get_user";
@@ -9,13 +11,8 @@ import { withApiAuthRequired } from "@auth0/nextjs-auth0";
 import { StreamingTextResponse } from "ai";
 import { NextRequest, NextResponse } from "next/server";
 
-const aiSession = sessionWithMockFallback(() => {
-  return new ReplicateSession(
-    "f4e2de70d66816a838a89eeeb621910adffb0dd0baba3976c96980970978018d"
-  );
-}, ["An initial story", "A good story", "A bad story"]);
-
 const handler = async function (req: NextRequest) {
+  const llms = new LLMs();
   const { user } = await getUser(req);
   const body: { prompt: string; storyMetadataId: string } = await req.json();
   const { storyMetadataId } = body;
@@ -55,12 +52,12 @@ const handler = async function (req: NextRequest) {
     results?.prompt || ""
   );
 
-  const stream = await aiSession.createStream({
-    maxTokens: 3000,
+  const stream = await llms.tellFirstStory({ storyMetadataId }).createStream({
+    maxTokens: 10,
     messages: [{ content: template }],
     async onCompletion(completion) {
       const { cost: memoryCost, memories } = await storyToMemory(
-        aiSession,
+        llms,
         results.id,
         completion
       );
@@ -90,7 +87,10 @@ const handler = async function (req: NextRequest) {
           }),
         ]);
       } else {
-        logger.info({ storyMetadataId: results.id }, "Updating story");
+        logger.info(
+          { storyMetadataId: results.id, completion },
+          "Updating story"
+        );
         await prisma.$transaction([
           prisma.actionMemory.createMany({
             data: memories.actions,
@@ -110,6 +110,7 @@ const handler = async function (req: NextRequest) {
               text: completion,
             },
             update: {
+              chapter: 0,
               text: completion,
             },
           }),

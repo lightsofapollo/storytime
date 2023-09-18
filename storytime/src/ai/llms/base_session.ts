@@ -38,6 +38,6 @@ export type StreamOptions = {
   onToken?: (token: string) => Promise<void> | void;
 };
 
-export abstract class Session {
+export abstract class BaseSession {
   abstract createStream(options: StreamOptions): Promise<ReadableStream>;
 }
