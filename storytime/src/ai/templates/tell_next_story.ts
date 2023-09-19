@@ -14,9 +14,9 @@ export default class TellNextStoryTemplate extends BaseTemplate {
     this.template = endent`
 
         Using the following character sheet and previous chapter story tell a rich story full of dialog about the character. The story should be engaging and create a continuing plot line with new events and memories.
-        The story should continue where the previous story left off as a chaper book without giving away the ending.
+        The story should continue where the previous story left off as a chaper book without giving away the ending. The story should not repeat.
         
-        The chapter should follow along with the given guidance: "{choice}"
+        The chapter should follow along with the given guidance: "${choice}"
         
         <character sheet>
         ${sheet}
