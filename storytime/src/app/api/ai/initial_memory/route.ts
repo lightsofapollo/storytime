@@ -22,6 +22,7 @@ const handler = async function (req: NextRequest) {
     },
     select: {
       Summary: true,
+      CharacterSheet: true,
     },
   });
 
@@ -33,7 +34,9 @@ const handler = async function (req: NextRequest) {
     return new NextResponse(null, { status: 404, statusText: "No summary" });
   }
 
-  const template = new MemoryTemplate(meta.Summary.summary);
+  const template = new MemoryTemplate(
+    meta.Summary.summary + "\n" + meta.CharacterSheet?.text
+  );
 
   const stream = await llms.memories({ storyMetadataId }).createStream({
     messages: [{ content: template }],
