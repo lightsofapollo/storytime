@@ -29,7 +29,9 @@ export default function GenerateStory({ story }: { story: Story }) {
 
   return (
     <Container>
-      <ReactMarkdown>{isLoading ? completion : story.text}</ReactMarkdown>
+      <ReactMarkdown>
+        {isLoading ? completion : story.text ? story.text : completion}
+      </ReactMarkdown>
       {(isComplete || story.generated) && !isLoading && (
         <AdvanceCurrentStory id={story.id} />
       )}

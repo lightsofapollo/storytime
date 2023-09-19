@@ -2,7 +2,7 @@
 
 import { api } from "@/trpc/server";
 import { trpc } from "@/utils/trpc";
-import { List, ListItemButton } from "@mui/material";
+import { Button, Input, List, ListItem, ListItemButton } from "@mui/material";
 import { Story } from "@prisma/client";
 import { useCompletion } from "ai/react";
 import { useRouter } from "next/navigation";
@@ -19,6 +19,7 @@ const REGEXP = /\s(.*)/;
 export default function AdvanceStory({ story }: Props) {
   const router = useRouter();
   const mutation = trpc.chooseStoryArc.useMutation();
+  const [customPrompt, setCustomPrompt] = useState("");
   const [choices, setChoices] = useState<Choices>([]);
   const { complete, isLoading } = useCompletion({
     api: "/api/ai/advance_story",
@@ -74,6 +75,23 @@ export default function AdvanceStory({ story }: Props) {
           </ListItemButton>
         );
       })}
+      <ListItem key={"custom"}>
+        <Input type="text" onChange={(e) => setCustomPrompt(e.target.value)} />
+        <Button
+          onClick={() => {
+            mutation
+              .mutateAsync({
+                storyMetadataId: story.storyMetadataId,
+                prompt: customPrompt,
+              })
+              .then((data) => {
+                router.push(`/stories/arc/${data.id}`);
+              });
+          }}
+        >
+          Use custom
+        </Button>
+      </ListItem>
     </List>
   );
 }
