@@ -91,7 +91,7 @@ const handler = async function (req: NextRequest) {
 
   console.log(template.format());
 
-  const stream = await llms.tellFirstStory({ storyMetadataId }).createStream({
+  const stream = await llms.tellNextStory({ storyMetadataId }).createStream({
     maxTokens: 4000,
     messages: [{ content: template }],
     async onCompletion(completion) {

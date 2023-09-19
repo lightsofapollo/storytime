@@ -1,6 +1,6 @@
 "use client";
 
-import { Container, Typography } from "@mui/material";
+import { Button, Container, Typography } from "@mui/material";
 import { Story } from "@prisma/client";
 import { useCompletion } from "ai/react";
 import { useEffect, useState } from "react";
@@ -30,7 +30,14 @@ export default function GenerateStory({ story }: { story: Story }) {
   return (
     <Container>
       <ReactMarkdown>{story.text || completion}</ReactMarkdown>
-      {(isComplete || story.generated) && <AdvanceCurrentStory id={story.id} />}
+      {(isComplete || story.generated) && !isLoading && (
+        <AdvanceCurrentStory id={story.id} />
+      )}
+      <Container>
+        <Button disabled={isLoading} onClick={() => complete("")}>
+          Regenerate story
+        </Button>
+      </Container>
     </Container>
   );
 }
