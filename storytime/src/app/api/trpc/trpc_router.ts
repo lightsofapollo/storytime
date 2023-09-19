@@ -289,12 +289,22 @@ export const appRouter = t.router({
         "Choosing story arc"
       );
 
+      const previousStory = await prisma.story.findFirst({
+        where: {
+          storyMetadataId: meta.id,
+        },
+        orderBy: {
+          chapter: "desc",
+        },
+      });
+
       return await prisma.story.create({
         data: {
           storyMetadataId: meta.id,
           userId: ctx.user.id,
           prompt: input.prompt,
           generated: false,
+          chapter: (previousStory?.chapter || 1) + 1,
           text: "",
         },
       });

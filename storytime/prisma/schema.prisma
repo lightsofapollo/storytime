@@ -34,7 +34,7 @@ model Summary {
 
 model Story {
   id              String         @id @default(uuid()) @db.Uuid
-  chapter         Int            @default(autoincrement())
+  chapter         Int            @default(0)
   prompt          String         @db.Text
   text            String         @db.Text
   generated       Boolean        @default(false)
