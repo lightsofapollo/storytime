@@ -9,7 +9,7 @@ import AdvanceCurrentStory from "./AdvanceCurrentStory";
 
 export default function GenerateStory({ story }: { story: Story }) {
   const [isComplete, setComplete] = useState(false);
-  const { completion, complete, isLoading } = useCompletion({
+  const { completion, complete, isLoading, stop } = useCompletion({
     api: "/api/ai/next_story",
     body: {
       storyMetadataId: story.storyMetadataId,
@@ -29,13 +29,16 @@ export default function GenerateStory({ story }: { story: Story }) {
 
   return (
     <Container>
-      <ReactMarkdown>{story.text || completion}</ReactMarkdown>
+      <ReactMarkdown>{isLoading ? completion : story.text}</ReactMarkdown>
       {(isComplete || story.generated) && !isLoading && (
         <AdvanceCurrentStory id={story.id} />
       )}
       <Container>
         <Button disabled={isLoading} onClick={() => complete("")}>
           Regenerate story
+        </Button>
+        <Button disabled={!isLoading} onClick={stop}>
+          Stop
         </Button>
       </Container>
     </Container>
