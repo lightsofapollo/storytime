@@ -5,6 +5,7 @@ import { ReplicateSession } from "../replicate";
 import { OpenAISession } from "../openai";
 import { MockSession } from "../mock";
 import { text } from "node:stream/consumers";
+import { FireworksSession } from "../fireworks";
 
 const maybe = process.env.JEST_E2E ? describe : describe.skip;
 
@@ -71,6 +72,28 @@ maybe("session", () => {
           expect(cost.cost).toBeGreaterThan(0);
           expect(cost.inputTokens).toBe(10);
           expect(cost.outputTokens).toBe(10);
+          deferred.resolve(null);
+        },
+      });
+      // consume the whole stream...
+      const _ = await text(stream as any);
+      await deferred.promise;
+    },
+    30 * 1000
+  );
+
+  it(
+    "it should measure costs for fireworks",
+    async () => {
+      const session = new FireworksSession(
+        "accounts/fireworks/models/llama-v2-70b-8k-chat-w8a16"
+      );
+      const deferred = defer();
+      const stream = await session.createStream({
+        messages: [{ content: "Hello this is a world of amazing ai things" }],
+        maxTokens: 10,
+        onCompletion: async function (completion, cost) {
+          expect(cost.cost).toBe(0);
           deferred.resolve(null);
         },
       });

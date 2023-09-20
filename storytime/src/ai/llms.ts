@@ -7,6 +7,7 @@ import logger from "@/utils/logger";
 import { MOCK_MEMORY_OUTPUT } from "./templates/memory";
 import { ReplicateSession } from "./llms/replicate";
 import { MOCK_TELL_NEXT_STORY } from "./templates/tell_next_story";
+import { FireworksSession } from "./llms/fireworks";
 
 export type SessionOptions<CTX> = {
   onCompletion: (
@@ -113,6 +114,9 @@ export class LLMs {
   tellFirstStory = llmSession<StoryMetaCtx>({
     mock: ["a cool story", "a bad story"],
     session() {
+      return new FireworksSession(
+        "accounts/fireworks/models/llama-v2-70b-8k-chat-w8a16"
+      );
       return new ReplicateSession(
         "f4e2de70d66816a838a89eeeb621910adffb0dd0baba3976c96980970978018d"
       );
@@ -148,6 +152,10 @@ export class LLMs {
   tellNextStory = llmSession<StoryMetaCtx>({
     mock: ["a cool story", "a bad story"],
     session() {
+      return new FireworksSession(
+        "accounts/fireworks/models/llama-v2-70b-8k-chat-w8a16"
+      );
+
       return new ReplicateSession(
         "f4e2de70d66816a838a89eeeb621910adffb0dd0baba3976c96980970978018d"
       );
