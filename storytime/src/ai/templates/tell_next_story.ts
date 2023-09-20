@@ -35,10 +35,12 @@ export default class TellNextStoryTemplate extends BaseTemplate {
         The chapter should resolve ${choice}
 
         The output should be in the form of a single chapter in the following format:
+        Do not include memories and actions in the output.
+        Do not include choices for continuing the story in the output.
 
         Title: Name of the story
 
-        The full story text continuing off from where the <previous story> left off.
+        The full story text continuing off from where the <previous story> left off.<END STORY>
         `;
   }
 }
