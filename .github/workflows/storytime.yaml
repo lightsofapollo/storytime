@@ -53,8 +53,6 @@ jobs:
       - uses: pnpm/action-setup@v2
         with:
           version: 8
-          #run_install: true
-          #package_json_file: ${{ env.BUILD_CONTEXT }}/package.json
           
       - name: Get pnpm store directory
         shell: bash
