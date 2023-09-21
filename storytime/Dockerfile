@@ -22,10 +22,10 @@ RUN pnpm add -g turbo
 COPY . .
 RUN pnpm install
 
-FROM base AS builder
-WORKDIR /usr/app
-COPY --from=installer /usr/app/ .
-RUN pnpm build
+#FROM base AS builder
+#WORKDIR /usr/app
+#COPY --from=installer /usr/app/ .
+#RUN pnpm build
 
 FROM base AS app
 WORKDIR /usr/app
