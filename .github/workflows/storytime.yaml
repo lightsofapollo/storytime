@@ -1,0 +1,84 @@
+name: storytime 
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+    paths:
+      - "storytime/**"
+      - ".github/workflows/storytime.yaml"      
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "storytime/**"
+      - ".github/workflows/storytime.yaml"      
+env:
+  BUILD_CONTEXT: "storytime"
+
+jobs:
+  Build:
+    runs-on:
+      group: ubuntu-latest
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v3
+
+      - name: Build docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: "${{ env.BUILD_CONTEXT }}"
+          file: "${{ env.BUILD_CONTEXT }}/Dockerfile" 
+          push: false
+          cache-from: type=gha,scope=storytime
+          cache-to: type=gha,mode=max,scope=storytime
+
+  PNPM-Tests:
+    runs-on:
+      group: GHA-Large
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v3
+
+      - name: Cache APT Packages
+        uses: awalsh128/cache-apt-pkgs-action@v1.3.0
+        with:
+          packages: curl make git bash perl postgresql-client gcc g++ libpq-dev awscli
+        
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          #run_install: true
+          #package_json_file: ${{ env.BUILD_CONTEXT }}/package.json
+          
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+          
+      - name: Install PNPM Deps
+        run: |
+          cd ${{ env.BUILD_CONTEXT }}
+          pnpm install
+
+      - name: Lint
+        run: |
+          cd ${{ env.BUILD_CONTEXT }}
+          pnpm lint
+
+      - name: Tests
+        run: |
+          cd ${{ env.BUILD_CONTEXT }}
+          pnpm test
