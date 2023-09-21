@@ -9,8 +9,7 @@ WORKDIR /app
 
 FROM base AS installer
 COPY . .
-RUN pnpm add -g turbo && \
-    pnpm install
+RUN pnpm install --frozen-lockfile
 
 FROM base AS builder
 COPY --from=installer /app/ .
