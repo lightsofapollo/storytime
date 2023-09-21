@@ -82,4 +82,4 @@ jobs:
       - name: Tests
         run: |
           cd ${{ env.BUILD_CONTEXT }}
-          pnpm test
+          pnpm jest
