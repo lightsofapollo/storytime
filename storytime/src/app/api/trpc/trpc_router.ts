@@ -5,6 +5,7 @@ import { Session } from "@auth0/nextjs-auth0";
 import { ActionMemory, RecallMemory, User } from "@prisma/client";
 import { z } from "zod";
 import logger from "@/utils/logger";
+import characters from "@/data/characters";
 
 const t = initTRPC.context<{ session: Session; user: User }>().create({
   transformer: superjson,
@@ -23,6 +24,10 @@ async function storyMetaFromCtx(
 }
 
 export const appRouter = t.router({
+  getPresetCharacters: t.procedure.query(async ({ ctx }) => {
+    return characters;
+  }),
+
   getStoryState: t.procedure
     .input(
       z.object({
@@ -47,17 +52,11 @@ export const appRouter = t.router({
 
       const [
         characterSheetCount,
-        summaryCount,
         recallMemoryCount,
         actionMemoryCount,
         storyCount,
       ] = await prisma.$transaction([
         prisma.characterSheet.count({
-          where: {
-            storyMetadataId: meta.id,
-          },
-        }),
-        prisma.summary.count({
           where: {
             storyMetadataId: meta.id,
           },
@@ -84,7 +83,6 @@ export const appRouter = t.router({
           id: meta.id,
           title: meta.title,
           characterSheetCount,
-          summaryCount,
           recallMemoryCount,
           actionMemoryCount,
           storyCount,
@@ -96,7 +94,6 @@ export const appRouter = t.router({
         id: meta.id,
         title: meta.title,
         hasCharacterSheet: characterSheetCount > 0,
-        hasSummary: summaryCount > 0,
         hasMemories: recallMemoryCount > 0 && actionMemoryCount > 0,
         hasStories: storyCount > 0,
       };

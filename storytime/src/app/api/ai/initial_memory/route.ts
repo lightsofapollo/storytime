@@ -21,7 +21,6 @@ const handler = async function (req: NextRequest) {
       userId: user.id,
     },
     select: {
-      Summary: true,
       CharacterSheet: true,
     },
   });
@@ -30,13 +29,14 @@ const handler = async function (req: NextRequest) {
     return new NextResponse(null, { status: 404 });
   }
 
-  if (!meta.Summary) {
-    return new NextResponse(null, { status: 404, statusText: "No summary" });
+  if (!meta.CharacterSheet) {
+    return new NextResponse(null, {
+      status: 400,
+      statusText: "No character sheet",
+    });
   }
 
-  const template = new MemoryTemplate(
-    meta.Summary.summary + "\n" + meta.CharacterSheet?.text
-  );
+  const template = new MemoryTemplate(meta.CharacterSheet?.text || "");
 
   const stream = await llms.memories({ storyMetadataId }).createStream({
     messages: [{ content: template }],

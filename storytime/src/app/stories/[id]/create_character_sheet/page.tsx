@@ -6,9 +6,12 @@ export default async function CreateCharacterSheet({
 }: {
   params: { id: string };
 }) {
-  const meta = await api.getStoryState.query({ id });
+  const [meta, presetCharacters] = await Promise.all([
+    api.getStoryState.query({ id }),
+    api.getPresetCharacters.query(),
+  ]);
   if (!meta) {
     return <div>Story not found</div>;
   }
-  return <EnterCharacterSheet {...meta} />;
+  return <EnterCharacterSheet {...meta} presetCharacters={presetCharacters} />;
 }

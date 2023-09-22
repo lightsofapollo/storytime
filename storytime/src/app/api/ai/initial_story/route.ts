@@ -11,7 +11,8 @@ import { NextRequest, NextResponse } from "next/server";
 const handler = async function (req: NextRequest) {
   const llms = new LLMs();
   const { user } = await getUser(req);
-  const body: { prompt: string; storyMetadataId: string } = await req.json();
+  const body: { prompt: string; storyMetadataId: string; brief?: string } =
+    await req.json();
   const { storyMetadataId } = body;
 
   const results = await prisma.storyMetadata.findFirst({
@@ -24,6 +25,7 @@ const handler = async function (req: NextRequest) {
       prompt: true,
       Summary: true,
       CharacterSheet: true,
+      WriterBrief: true,
       ActionMemory: true,
       RecallMemory: true,
     },
@@ -45,6 +47,7 @@ const handler = async function (req: NextRequest) {
 
   const template = new FirstStoryTemplate(
     results.CharacterSheet?.text || "",
+    results.WriterBrief?.prompt || "",
     relevantMemories.join("\n"),
     results?.prompt || ""
   );
