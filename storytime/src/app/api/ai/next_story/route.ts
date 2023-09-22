@@ -2,6 +2,7 @@ import { LLMs } from "@/ai/llms";
 import { sessionWithMockFallback } from "@/ai/llms/mock";
 import { OpenAISession } from "@/ai/llms/openai";
 import { ReplicateSession } from "@/ai/llms/replicate";
+import { StoryBuilder } from "@/ai/story/StoryBuilder";
 import FirstStoryTemplate from "@/ai/templates/first_story";
 import TellNextStoryTemplate from "@/ai/templates/tell_next_story";
 import prisma from "@/utils/db";
@@ -30,11 +31,20 @@ const handler = async function (req: NextRequest) {
       userId: user.id,
       id: storyMetadataId,
     },
-    select: {
-      id: true,
+    include: {
       CharacterSheet: true,
-      ActionMemory: true,
-      RecallMemory: true,
+      ActionMemory: {
+        take: 100,
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
+      RecallMemory: {
+        take: 100,
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
     },
   });
 
@@ -80,20 +90,14 @@ const handler = async function (req: NextRequest) {
     relevantMemories.push(`Memory: ${memory.text} (${memory.timeAgo})`);
   }
 
-  logger.info({ storyMetadata, relevantMemories }, "Story metadata");
-
-  const template = new TellNextStoryTemplate(
-    storyMetadata.CharacterSheet?.text || "",
-    previousStory?.text || "",
-    relevantMemories.join("\n"),
-    currentStory.prompt
-  );
-
-  console.log(template.format());
+  const builder = new StoryBuilder(llms, storyMetadataId, currentStory.prompt);
+  builder.appendSheet(storyMetadata.CharacterSheet?.text || "");
+  builder.appendPreviousStory(previousStory.text);
+  builder.appendMemories(relevantMemories);
 
   const stream = await llms.tellNextStory({ storyMetadataId }).createStream({
     maxTokens: 4000,
-    messages: [{ content: template }],
+    messages: [{ content: builder.finalize() }],
     async onCompletion(completion) {
       const { cost: memoryCost, memories } = await storyToMemory(
         llms,
