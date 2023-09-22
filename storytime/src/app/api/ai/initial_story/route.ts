@@ -1,7 +1,4 @@
 import { LLMs } from "@/ai/llms";
-import { sessionWithMockFallback } from "@/ai/llms/mock";
-import { OpenAISession } from "@/ai/llms/openai";
-import { ReplicateSession } from "@/ai/llms/replicate";
 import FirstStoryTemplate from "@/ai/templates/first_story";
 import prisma from "@/utils/db";
 import { getUser } from "@/utils/get_user";
@@ -79,6 +76,11 @@ const handler = async function (req: NextRequest) {
               storyMetadataId: results.id,
               chapter: 0,
               text: completion,
+              StoryPrompts: {
+                create: {
+                  prompt: template.format(),
+                },
+              },
             },
           }),
           prisma.actionMemory.createMany({

@@ -46,6 +46,7 @@ model Story {
   RecallMemory    RecallMemory[]
   User            User           @relation(fields: [userId], references: [id])
   Cost            Cost[]
+  StoryPrompts    StoryPrompts[]
 
   @@unique([chapter, storyMetadataId])
 }
@@ -88,6 +89,14 @@ model StoryMetadata {
   ActionMemory   ActionMemory[]
   RecallMemory   RecallMemory[]
   Cost           Cost[]
+}
+
+model StoryPrompts {
+  id      String @id @default(uuid()) @db.Uuid
+  prompt  String @db.Text
+  storyId String @db.Uuid
+
+  Story Story @relation(fields: [storyId], references: [id])
 }
 
 model Cost {
