@@ -15,6 +15,7 @@ type Props = {
 type Choices = string[];
 
 const REGEXP = /\s(.*)/;
+const NON_LINES = /(next in the story)/i;
 
 export default function AdvanceStory({ story }: Props) {
   const router = useRouter();
@@ -27,6 +28,11 @@ export default function AdvanceStory({ story }: Props) {
     onFinish(prompt, completion) {
       let finalChoices: string[] = [];
       completion.split("\n").forEach((line) => {
+        line = line.trim();
+        console.log({ line });
+        if (!line || NON_LINES.test(line)) {
+          return;
+        }
         const matches = line.match(REGEXP);
         if (matches) {
           finalChoices.push(matches[1]);
