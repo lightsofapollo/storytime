@@ -94,10 +94,11 @@ const handler = async function (req: NextRequest) {
   builder.appendSheet(storyMetadata.CharacterSheet?.text || "");
   builder.appendPreviousStory(previousStory.text);
   builder.appendMemories(relevantMemories);
+  const storyPromptString = builder.finalize();
 
   const stream = await llms.tellNextStory({ storyMetadataId }).createStream({
     maxTokens: 4000,
-    messages: [{ content: builder.finalize() }],
+    messages: [{ content: storyPromptString }],
     async onCompletion(completion) {
       const { cost: memoryCost, memories } = await storyToMemory(
         llms,
@@ -131,6 +132,11 @@ const handler = async function (req: NextRequest) {
             storyMetadataId: storyMetadata.id,
             text: completion,
             generated: true,
+            StoryPrompts: {
+              create: {
+                prompt: storyPromptString,
+              },
+            },
           },
         }),
       ]);
