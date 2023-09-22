@@ -25,7 +25,6 @@ export default function AdvanceStory({ story }: Props) {
     api: "/api/ai/advance_story",
     body: { storyMetadataId: story.storyMetadataId, storyId: story.id },
     onFinish(prompt, completion) {
-      console.log(completion);
       let finalChoices: string[] = [];
       completion.split("\n").forEach((line) => {
         const matches = line.match(REGEXP);
@@ -90,6 +89,14 @@ export default function AdvanceStory({ story }: Props) {
           }}
         >
           Use custom
+        </Button>
+        <Button
+          disabled={mutation.isLoading || isLoading}
+          onClick={() => {
+            complete("");
+          }}
+        >
+          Refresh options
         </Button>
       </ListItem>
     </List>

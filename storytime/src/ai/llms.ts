@@ -8,6 +8,7 @@ import { MOCK_MEMORY_OUTPUT } from "./templates/memory";
 import { ReplicateSession } from "./llms/replicate";
 import { MOCK_TELL_NEXT_STORY } from "./templates/tell_next_story";
 import { FireworksSession } from "./llms/fireworks";
+import { LLAMATokenizer, OpenAITokenizer, Tokenizer } from "./tokenizer";
 
 export type SessionOptions<CTX> = {
   onCompletion: (
@@ -17,6 +18,8 @@ export type SessionOptions<CTX> = {
     opts: StreamOptions
   ) => Promise<void> | void;
   session: (ctx: CTX) => BaseSession;
+  tokenLimit: number;
+  tokenizer: Tokenizer;
   mock: string[];
 };
 
@@ -28,6 +31,8 @@ function llmSession<T>(opts: SessionOptions<T>) {
         : opts.session(ctx);
 
     return {
+      tokenLimit: opts.tokenLimit,
+      tokenizer: opts.tokenizer,
       createStream: (options: StreamOptions) => {
         return session.createStream({
           ...options,
@@ -51,8 +56,14 @@ type StoryMetaCtx = {
   storyMetadataId: string;
 };
 
+const openAISettings = {
+  tokenizer: new OpenAITokenizer(),
+  tokenLimit: 4096,
+};
+
 export class LLMs {
   characterSheet = llmSession<StoryMetaCtx>({
+    ...openAISettings,
     mock: [MOCK_CHARACTER_SHEET],
     async onCompletion(
       ctx: { storyMetadataId: string },
@@ -74,6 +85,7 @@ export class LLMs {
   });
 
   summary = llmSession<StoryMetaCtx>({
+    ...openAISettings,
     mock: ["a cool summary", "a bad summary"],
     session() {
       return new OpenAISession("gpt-3.5-turbo");
@@ -95,6 +107,7 @@ export class LLMs {
   });
 
   memories = llmSession<StoryMetaCtx & { storyId?: string }>({
+    ...openAISettings,
     mock: [MOCK_MEMORY_OUTPUT],
     session() {
       return new OpenAISession("gpt-3.5-turbo");
@@ -112,6 +125,8 @@ export class LLMs {
   });
 
   tellFirstStory = llmSession<StoryMetaCtx>({
+    tokenizer: new LLAMATokenizer(),
+    tokenLimit: 1024 * 8,
     mock: ["a cool story", "a bad story"],
     session() {
       return new FireworksSession(
@@ -133,6 +148,7 @@ export class LLMs {
   });
 
   storyChoices = llmSession<StoryMetaCtx & { storyId: string }>({
+    ...openAISettings,
     mock: [MOCK_TELL_NEXT_STORY],
     session() {
       return new OpenAISession("gpt-3.5-turbo");
@@ -150,6 +166,8 @@ export class LLMs {
   });
 
   tellNextStory = llmSession<StoryMetaCtx>({
+    tokenizer: new LLAMATokenizer(),
+    tokenLimit: 1024 * 8,
     mock: ["a cool story", "a bad story"],
     session() {
       return new FireworksSession(
