@@ -55,6 +55,5 @@ describe("StoryBuilder", () => {
     expect(final).toContain(memories[2]);
     expect(final).not.toContain(memories[999]);
     expect(builder.builder.remainder()).toBeGreaterThan(0);
-    console.log(final);
   });
 });
