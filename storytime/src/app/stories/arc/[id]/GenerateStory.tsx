@@ -16,9 +16,6 @@ export default function GenerateStory({ story }: { story: Story }) {
       storyId: story.id,
       chapter: story.chapter,
     },
-    onResponse(response) {
-      console.log("hit response");
-    },
     onFinish(prompt, completion) {
       setComplete(true);
     },
