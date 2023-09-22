@@ -1,3 +1,3 @@
 {
-    "buildCommand": "next build && prisma migration deploy"
+    "buildCommand": "next build && prisma migrate deploy"
 }
