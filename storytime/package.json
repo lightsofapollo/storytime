@@ -30,6 +30,7 @@
     "eslint": "8.49.0",
     "eslint-config-next": "13.4.19",
     "js-tiktoken": "^1.0.7",
+    "langchain": "^0.0.153",
     "next": "13.4.19",
     "openai": "^4.7.0",
     "pino": "^8.15.1",
