@@ -24,6 +24,7 @@ export default function GenerateStory({ story }: { story: Story }) {
   useEffect(() => {
     if (!story.generated) {
       complete("");
+      return () => stop();
     }
   }, [story.generated]);
 

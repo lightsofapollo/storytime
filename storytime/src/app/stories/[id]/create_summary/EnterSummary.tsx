@@ -15,7 +15,7 @@ type Props = {
 
 export default function EnterSummary({ id, title, hasSummary }: Props) {
   const router = useRouter();
-  const { completion, isLoading, complete } = useCompletion({
+  const { completion, isLoading, complete, stop } = useCompletion({
     api: "/api/ai/summary",
     body: { storyMetadataId: id },
     onFinish() {
@@ -28,6 +28,7 @@ export default function EnterSummary({ id, title, hasSummary }: Props) {
   useEffect(() => {
     if (!hasSummary) {
       complete("");
+      return () => stop();
     }
   }, [hasSummary]);
 

@@ -14,17 +14,20 @@ type Props = {
 
 export default function EnterFirstStory({ id, title, hasStories }: Props) {
   const router = useRouter();
-  const { completion, isLoading, complete, handleSubmit } = useCompletion({
-    api: "/api/ai/initial_story",
-    body: { storyMetadataId: id },
-    onFinish() {
-      router.push(`/stories/${id}/?time=${Date.now()}`);
-    },
-  });
+  const { completion, isLoading, complete, handleSubmit, stop } = useCompletion(
+    {
+      api: "/api/ai/initial_story",
+      body: { storyMetadataId: id },
+      onFinish() {
+        router.push(`/stories/${id}/?time=${Date.now()}`);
+      },
+    }
+  );
 
   useEffect(() => {
     if (!hasStories) {
       complete("");
+      return () => stop();
     }
   }, [hasStories]);
 

@@ -22,20 +22,23 @@ export default function EnterMemories({
   const summary = trpc.getSummary.useQuery({ storyMetadataId: id });
   const router = useRouter();
 
-  const { completion, complete, isLoading, handleSubmit } = useCompletion({
-    api: "/api/ai/initial_memory",
-    body: { storyMetadataId: id },
-    onFinish() {
-      if (!hasMemories) {
-        router.push(`/stories/${id}/create_first_story`);
-        return;
-      }
-    },
-  });
+  const { completion, complete, isLoading, handleSubmit, stop } = useCompletion(
+    {
+      api: "/api/ai/initial_memory",
+      body: { storyMetadataId: id },
+      onFinish() {
+        if (!hasMemories) {
+          router.push(`/stories/${id}/create_first_story`);
+          return;
+        }
+      },
+    }
+  );
 
   useEffect(() => {
     if (!hasMemories) {
       complete("");
+      return () => stop();
     }
   }, [hasMemories]);
 

@@ -19,7 +19,7 @@ export default async function Stories() {
           key={story.id}
           style={{ border: "1px solid #ccc", textAlign: "center" }}
         >
-          <Link href={`/stories/${story.id}`}>
+          <Link prefetch={false} href={`/stories/${story.id}`}>
             <img
               src={`https://robohash.org/${story.id}?set=set2&size=180x180`}
               alt={story.title}

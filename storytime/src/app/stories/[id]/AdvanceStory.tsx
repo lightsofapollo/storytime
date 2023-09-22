@@ -22,7 +22,7 @@ export default function AdvanceStory({ story }: Props) {
   const mutation = trpc.chooseStoryArc.useMutation();
   const [customPrompt, setCustomPrompt] = useState("");
   const [choices, setChoices] = useState<Choices>([]);
-  const { complete, isLoading } = useCompletion({
+  const { complete, isLoading, stop } = useCompletion({
     api: "/api/ai/advance_story",
     body: { storyMetadataId: story.storyMetadataId, storyId: story.id },
     onFinish(prompt, completion) {
@@ -44,6 +44,7 @@ export default function AdvanceStory({ story }: Props) {
 
   useEffect(() => {
     complete("");
+    return () => stop();
   }, []);
 
   if (isLoading) {
@@ -94,7 +95,7 @@ export default function AdvanceStory({ story }: Props) {
               });
           }}
         >
-          Use custom
+          Text choice
         </Button>
         <Button
           disabled={mutation.isLoading || isLoading}
@@ -102,7 +103,7 @@ export default function AdvanceStory({ story }: Props) {
             complete("");
           }}
         >
-          Refresh options
+          Load choices
         </Button>
       </ListItem>
     </List>
