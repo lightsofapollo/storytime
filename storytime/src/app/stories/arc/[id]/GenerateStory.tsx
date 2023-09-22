@@ -16,6 +16,9 @@ export default function GenerateStory({ story }: { story: Story }) {
       storyId: story.id,
       chapter: story.chapter,
     },
+    onResponse(response) {
+      console.log("hit response");
+    },
     onFinish(prompt, completion) {
       setComplete(true);
     },
@@ -29,9 +32,7 @@ export default function GenerateStory({ story }: { story: Story }) {
 
   return (
     <Container>
-      <ReactMarkdown>
-        {isLoading ? completion : story.text ? story.text : completion}
-      </ReactMarkdown>
+      <ReactMarkdown>{!completion ? story.text : completion}</ReactMarkdown>
       {(isComplete || story.generated) && !isLoading && (
         <AdvanceCurrentStory id={story.id} />
       )}

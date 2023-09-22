@@ -3,7 +3,7 @@ import { LLMs } from "../llms";
 import { SizedTokenBuilder } from "../sized/SizedTokenBuilder";
 
 const PREAMBLE_TPL = endent`
-    Using the following character sheet and previous chapter story tell a rich story full of dialog about the character. The story should be engaging and create a continuing plot line with new events and memories.
+    Using the following character sheet and previous chapter story tell a rich story full of dialog about the character. The story should be engaging and create a continuing plot line with new events.
     The story should continue where the previous story left off as a chaper book without giving away the ending. The story should not repeat.
     The chapter should follow along with the given guidance:
     `;
@@ -15,7 +15,8 @@ const POSTAMBLE_TPL = endent`
 
     Title: Name of the story
 
-    The full story text continuing off from where the <previous story> left off.<END STORY>
+    The full story text continuing off from where the <previous story> left off.
+    Does not include Memories or Actions from the prompt only the continuation of the story.
     `;
 
 export class StoryBuilder {
