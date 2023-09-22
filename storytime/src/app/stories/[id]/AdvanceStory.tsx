@@ -15,7 +15,7 @@ type Props = {
 type Choices = string[];
 
 const REGEXP = /\s(.*)/;
-const NON_LINES = /(next in the story)/i;
+const NON_LINES = /(next in the story)|(actions that could happen next)/i;
 
 export default function AdvanceStory({ story }: Props) {
   const router = useRouter();
