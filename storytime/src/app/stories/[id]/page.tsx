@@ -16,8 +16,6 @@ export default async function StoryPage({
 
   if (!state.hasCharacterSheet) {
     redirect(`/stories/${id}/create_character_sheet`);
-  } else if (!state.hasSummary) {
-    redirect(`/stories/${id}/create_summary`);
   } else if (!state.hasMemories) {
     redirect(`/stories/${id}/create_memories`);
   } else if (!state.hasStories) {

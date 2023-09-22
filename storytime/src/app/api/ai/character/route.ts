@@ -9,8 +9,9 @@ import { NextRequest, NextResponse } from "next/server";
 const handler = async function (req: NextRequest) {
   const llms = new LLMs();
   const { user } = await getUser(req);
-  const body: { prompt: string; storyMetadataId: string } = await req.json();
-  const { prompt, storyMetadataId } = body;
+  const body: { prompt: string; storyMetadataId: string; brief?: string } =
+    await req.json();
+  const { prompt, storyMetadataId, brief } = body;
   const template = new CharacterSheetTemplate(prompt);
   const storyMetadata = await prisma.storyMetadata.findUnique({
     select: {
@@ -29,6 +30,11 @@ const handler = async function (req: NextRequest) {
     });
   }
 
+  const briefData = {
+    title: "Writer brief",
+    prompt: brief || "",
+  };
+
   const stream = await llms
     .characterSheet({
       storyMetadataId,
@@ -36,11 +42,18 @@ const handler = async function (req: NextRequest) {
     .createStream({
       messages: [{ content: template }],
       async onCompletion(completion) {
-        await prisma.characterSheet.deleteMany({
-          where: {
-            storyMetadataId,
-          },
-        });
+        await prisma.$transaction([
+          prisma.characterSheet.deleteMany({
+            where: {
+              storyMetadataId,
+            },
+          }),
+          prisma.writerBrief.deleteMany({
+            where: {
+              storyMetadataId,
+            },
+          }),
+        ]);
         await prisma.$transaction([
           prisma.storyMetadata.update({
             where: {
@@ -49,6 +62,11 @@ const handler = async function (req: NextRequest) {
             },
             data: {
               prompt,
+              WriterBrief: {
+                create: {
+                  ...briefData,
+                },
+              },
             },
           }),
           prisma.characterSheet.create({

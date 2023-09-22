@@ -9,6 +9,7 @@ import { ReplicateSession } from "./llms/replicate";
 import { MOCK_TELL_NEXT_STORY } from "./templates/tell_next_story";
 import { FireworksSession } from "./llms/fireworks";
 import { LLAMATokenizer, OpenAITokenizer, Tokenizer } from "./tokenizer";
+import OpenAI from "openai";
 
 export type SessionOptions<CTX> = {
   onCompletion: (

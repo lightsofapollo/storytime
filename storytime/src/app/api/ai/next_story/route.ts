@@ -33,6 +33,7 @@ const handler = async function (req: NextRequest) {
     },
     include: {
       CharacterSheet: true,
+      WriterBrief: true,
       ActionMemory: {
         take: 100,
         orderBy: {
@@ -92,6 +93,11 @@ const handler = async function (req: NextRequest) {
 
   const builder = new StoryBuilder(llms, storyMetadataId, currentStory.prompt);
   builder.appendSheet(storyMetadata.CharacterSheet?.text || "");
+
+  if (storyMetadata.WriterBrief && storyMetadata.WriterBrief.prompt) {
+    builder.appendWriterBrief(storyMetadata.WriterBrief.prompt);
+  }
+
   builder.appendPreviousStory(previousStory.text);
   builder.appendMemories(relevantMemories);
   const storyPromptString = builder.finalize();

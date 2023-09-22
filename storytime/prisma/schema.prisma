@@ -32,6 +32,14 @@ model Summary {
   storyMetadataId String        @unique @db.Uuid
 }
 
+model WriterBrief {
+  id              String        @id @default(uuid()) @db.Uuid
+  title           String
+  prompt          String        @db.Text
+  storyMetadataId String        @unique @db.Uuid
+  StoryMetadata   StoryMetadata @relation(fields: [storyMetadataId], references: [id])
+}
+
 model Story {
   id              String         @id @default(uuid()) @db.Uuid
   chapter         Int            @default(0)
@@ -89,12 +97,14 @@ model StoryMetadata {
   ActionMemory   ActionMemory[]
   RecallMemory   RecallMemory[]
   Cost           Cost[]
+  WriterBrief    WriterBrief?
 }
 
 model StoryPrompts {
-  id      String @id @default(uuid()) @db.Uuid
-  prompt  String @db.Text
-  storyId String @db.Uuid
+  id        String   @id @default(uuid()) @db.Uuid
+  prompt    String   @db.Text
+  storyId   String   @db.Uuid
+  createdAt DateTime @default(now())
 
   Story Story @relation(fields: [storyId], references: [id])
 }
@@ -111,4 +121,18 @@ model Cost {
 
   @@index([action])
   @@index([storyMetadataId])
+}
+
+model PresetGenreBrief {
+  id     String @id @default(uuid()) @db.Uuid
+  title  String
+  prompt String @db.Text
+}
+
+model PresetCharacter {
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String
+  description String
+  prompt      String  @db.Text
+  brief       String? @db.Text
 }
